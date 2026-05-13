@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ಕನ್ನಡ ಕಲಿಯೋಣ – Learn Kannada</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{min-height:100vh;background:linear-gradient(135deg,#0a0f1a 0%,#141a2e 60%,#0f1820 100%);font-family:Georgia,'Times New Roman',serif;color:#e8d5b7;-webkit-user-select:none;user-select:none}
+
+/* ── Header ── */
+.header{background:linear-gradient(90deg,#8a6010,#d4a843,#f0c96a,#d4a843,#8a6010);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 4px 24px rgba(212,168,67,.5)}
+.header-title{font-size:clamp(14px,3vw,20px);font-weight:bold;color:#1a0800;letter-spacing:1px}
+.header-sub{font-size:10px;color:#4a2800;margin-top:2px}
+.header-stats{text-align:right;font-size:12px;color:#4a2800;font-weight:bold}
+.header-stats span{display:block;font-size:10px;color:#6a4000;font-weight:normal}
+
+/* ── Tabs ── */
+.tabs{display:flex;background:rgba(0,0,0,.3);border-bottom:2px solid rgba(212,168,67,.25)}
+.tab{flex:1;padding:11px 6px;border:none;background:transparent;color:#7a6a4a;font-family:Georgia,serif;font-size:12px;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s}
+.tab.active{background:rgba(212,168,67,.15);color:#f0c96a;border-bottom:2px solid #f0c96a;font-weight:bold}
+
+/* ── Body ── */
+.body{padding:14px;max-width:680px;margin:0 auto}
+
+/* ── Progress bar ── */
+.prog-bar{height:4px;background:rgba(255,255,255,.07);border-radius:4px;margin-bottom:12px}
+.prog-fill{height:100%;background:linear-gradient(90deg,#d4a843,#f0c96a);border-radius:4px;transition:width .4s}
+.prog-label{font-size:10px;color:#5a4a30;text-align:right;margin-bottom:12px}
+
+/* ── Category grid ── */
+.cat-label{font-size:11px;color:#6a5a40;margin-bottom:8px}
+.cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;margin-bottom:14px}
+.cat-btn{padding:9px 8px;border-radius:9px;border:2px solid rgba(212,168,67,.25);background:rgba(255,255,255,.025);color:#9a806a;font-family:Georgia,serif;font-size:10px;cursor:pointer;text-align:center;transition:all .2s;line-height:1.4}
+.cat-btn.active{border-color:#f0c96a;background:rgba(212,168,67,.18);color:#f0c96a}
+.cat-btn small{opacity:.65}
+
+/* ── Flash Card ── */
+.card-wrap{perspective:1200px;height:290px;margin-bottom:18px;cursor:pointer}
+.card-inner{position:relative;width:100%;height:100%;transition:transform .55s cubic-bezier(.4,.2,.2,1);transform-style:preserve-3d}
+.card-inner.flipped{transform:rotateY(180deg)}
+.card-face{position:absolute;inset:0;border-radius:20px;backface-visibility:hidden;-webkit-backface-visibility:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 20px;box-shadow:0 8px 32px rgba(0,0,0,.55);text-align:center}
+.card-face.front{background:linear-gradient(145deg,#1a150a,#251a00);border:2px solid rgba(212,168,67,.3)}
+.card-face.back{background:linear-gradient(145deg,#0f2010,#091505);border:2px solid rgba(212,168,67,.5);transform:rotateY(180deg)}
+.card-badge{position:absolute;top:12px;left:12px;font-size:10px;background:rgba(212,168,67,.12);border:1px solid rgba(212,168,67,.3);border-radius:20px;padding:3px 9px;color:#d4a843}
+.card-mastered{position:absolute;top:12px;right:12px;font-size:10px;color:#6adc6a}
+.card-flip-hint{position:absolute;bottom:12px;right:14px;font-size:10px;color:rgba(212,168,67,.4)}
+.card-lang{font-size:10px;color:#6a5040;margin-bottom:10px}
+.card-en{font-size:clamp(16px,3.5vw,26px);color:#e8d5b7;font-weight:bold;line-height:1.3}
+.card-kn{font-size:clamp(34px,7vw,56px);color:#f0c96a;line-height:1.2}
+.card-rom{font-size:13px;color:#d4a843;margin-top:6px;font-style:italic}
+.card-tip{font-size:11px;color:#7a9a6a;margin-top:10px;font-style:italic}
+.card-hint-text{font-size:10px;color:rgba(212,168,67,.35);margin-top:16px}
+
+/* ── Nav Row ── */
+.nav-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
+.nav-btn{padding:10px 18px;border-radius:10px;border:2px solid rgba(212,168,67,.4);background:rgba(212,168,67,.12);color:#f0c96a;font-family:Georgia,serif;font-size:13px;cursor:pointer;transition:all .2s}
+.nav-btn:hover{background:rgba(212,168,67,.22)}
+.nav-counter{font-size:12px;color:#8a7a5a;text-align:center}
+.nav-cat{font-size:10px;color:#5a4830;text-align:center;margin-top:3px}
+
+/* ── Action Row ── */
+.action-row{display:flex;gap:8px;justify-content:center;margin-bottom:14px;flex-wrap:wrap}
+.action-btn{padding:8px 14px;border-radius:9px;font-family:Georgia,serif;font-size:11px;cursor:pointer;transition:all .2s}
+.btn-master{border:2px solid rgba(74,154,74,.5);background:rgba(74,154,74,.15);color:#8ade8a}
+.btn-random{border:2px solid rgba(212,168,67,.5);background:rgba(212,168,67,.15);color:#f0c96a}
+.btn-reverse{border:2px solid rgba(100,160,220,.45);background:rgba(100,160,220,.15);color:#80b8e8}
+.btn-quiz{border:2px solid rgba(220,140,80,.45);background:rgba(220,140,80,.15);color:#e8a870}
+.btn-reverse.on{background:rgba(100,160,220,.3);border-color:#80b8e8}
+
+/* ── Quiz Banner ── */
+.quiz-banner{background:linear-gradient(135deg,rgba(180,80,30,.22),rgba(212,168,67,.12));border:2px solid rgba(200,90,30,.5);border-radius:13px;padding:11px 14px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.quiz-banner-text{font-size:13px;color:#e8a870}
+.quiz-banner-btns{display:flex;gap:8px}
+.quiz-banner-btn{padding:7px 13px;border-radius:8px;font-family:Georgia,serif;font-size:11px;cursor:pointer}
+.qbb-take{border:1px solid #e8a870;background:rgba(200,100,30,.2);color:#e8a870}
+.qbb-skip{border:1px solid #6a5040;background:transparent;color:#6a5040}
+
+/* ── Quiz ── */
+.quiz-start{text-align:center;padding-top:30px}
+.quiz-start-icon{font-size:40px;margin-bottom:12px}
+.quiz-start-title{font-size:17px;margin-bottom:8px}
+.quiz-start-sub{font-size:12px;color:#7a6040;margin-bottom:20px}
+.quiz-start-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.quiz-prog-row{display:flex;justify-content:space-between;font-size:11px;color:#6a5040;margin-bottom:12px}
+.quiz-type-tag{font-size:11px;padding:2px 8px;border-radius:10px}
+.quiz-type-normal{color:#c8a050}
+.quiz-type-reverse{color:#80a8d0}
+.quiz-card{background:linear-gradient(145deg,#1a150a,#251a00);border:2px solid rgba(212,168,67,.4);border-radius:18px;padding:24px 20px;margin-bottom:14px;text-align:center}
+.quiz-card-label{font-size:10px;color:#6a5030;margin-bottom:6px}
+.quiz-q-en{font-size:clamp(14px,3vw,20px);color:#e8d5b7}
+.quiz-q-kn{font-size:clamp(30px,6vw,48px);color:#f0c96a;line-height:1.2}
+.quiz-q-rom{font-size:13px;color:#d4a843;font-style:italic;margin-top:4px}
+.opt-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.opt-btn{padding:12px 8px;border-radius:12px;border:2px solid rgba(212,168,67,.3);background:rgba(255,255,255,.03);color:#f0c96a;font-family:Georgia,serif;font-size:clamp(18px,3.5vw,28px);cursor:pointer;transition:all .2s;line-height:1.25;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.opt-btn.correct{border-color:#4a9a4a;background:rgba(74,154,74,.18);color:#8ade8a}
+.opt-btn.wrong{border-color:#9a3030;background:rgba(154,48,48,.18);color:#de8a8a}
+.opt-btn:not([disabled]):hover{background:rgba(212,168,67,.15)}
+.opt-rom{font-size:10px;color:#c8a030;margin-top:3px;font-style:italic;font-size:11px}
+.opt-en{font-size:clamp(11px,2.5vw,15px);color:#e0c890}
+.quiz-result{text-align:center;padding:10px;border-radius:9px;margin-bottom:10px;margin-top:12px;font-size:14px}
+.quiz-result.ok{background:rgba(74,154,74,.14);color:#8ade8a}
+.quiz-result.fail{background:rgba(154,48,48,.14);color:#de8a8a}
+.quiz-result-sub{font-size:11px;margin-top:4px;color:#b0906a}
+.quiz-next-wrap{text-align:center}
+
+/* ── Quiz Done ── */
+.quiz-done{text-align:center;padding-top:16px}
+.quiz-done-icon{font-size:36px;margin-bottom:10px}
+.quiz-done-title{font-size:22px;color:#f0c96a;margin-bottom:6px}
+.quiz-done-score{font-size:38px;font-weight:bold;color:#8ade8a;margin-bottom:4px}
+.quiz-done-sub{font-size:13px;color:#8a7050;margin-bottom:20px}
+.quiz-done-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+
+/* ── Stats ── */
+.stats-title{font-size:15px;color:#f0c96a;margin-bottom:14px;font-weight:bold}
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+.stat-box{background:rgba(255,255,255,.04);border:1px solid rgba(212,168,67,.2);border-radius:12px;padding:13px 8px;text-align:center}
+.stat-num{font-size:22px;color:#f0c96a;font-weight:bold}
+.stat-num.seen{color:#80b8e8}
+.stat-num.mastered{color:#8ade8a}
+.stat-label{font-size:10px;color:#6a5a4a;margin-top:3px}
+.stats-sub{margin-bottom:10px;font-size:12px;color:#7a6040}
+.cat-stat{margin-bottom:10px}
+.cat-stat-row{display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px}
+.cat-stat-name{color:#d4a843}
+.cat-stat-count{color:#6a5a40}
+.stats-btns{margin-top:18px;display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.btn-danger{border:2px solid rgba(200,80,80,.4);background:rgba(154,48,48,.1);color:#de8a8a;padding:10px 18px;border-radius:10px;font-family:Georgia,serif;font-size:11px;cursor:pointer}
+</style>
+</head>
+<body>
+
+<div id="app"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════════
+// DECK DATA – 800+ cards
+// ═══════════════════════════════════════════════════════════════════════
+const DECK = {
+  "🔤 Alphabet": [
+    {en:"a (as in 'sun')",kn:"ಅ",rom:"a",tip:"Short 'a' vowel — first letter of Kannada"},
+    {en:"aa (as in 'arm')",kn:"ಆ",rom:"ā",tip:"Long 'aa' vowel"},
+    {en:"i (as in 'it')",kn:"ಇ",rom:"i",tip:"Short 'i' vowel"},
+    {en:"ee (as in 'feet')",kn:"ಈ",rom:"ī",tip:"Long 'ee' vowel"},
+    {en:"u (as in 'put')",kn:"ಉ",rom:"u",tip:"Short 'u' vowel"},
+    {en:"oo (as in 'moon')",kn:"ಊ",rom:"ū",tip:"Long 'oo' vowel"},
+    {en:"ru (as in 'rhythm')",kn:"ಋ",rom:"ṛ",tip:"Sanskrit-origin vowel"},
+    {en:"e (as in 'egg')",kn:"ಎ",rom:"e",tip:"Short 'e' vowel"},
+    {en:"ae (as in 'aid')",kn:"ಏ",rom:"ē",tip:"Long 'ae' vowel"},
+    {en:"ai (as in 'aisle')",kn:"ಐ",rom:"ai",tip:"Diphthong"},
+    {en:"o (as in 'hot')",kn:"ಒ",rom:"o",tip:"Short 'o' vowel"},
+    {en:"oo (as in 'go')",kn:"ಓ",rom:"ō",tip:"Long 'oo' vowel"},
+    {en:"au (as in 'out')",kn:"ಔ",rom:"au",tip:"Diphthong"},
+    {en:"ka",kn:"ಕ",rom:"ka",tip:"Unvoiced velar stop"},
+    {en:"kha (aspirated k)",kn:"ಖ",rom:"kha",tip:"Breathier k sound"},
+    {en:"ga",kn:"ಗ",rom:"ga",tip:"Voiced velar stop"},
+    {en:"gha (aspirated g)",kn:"ಘ",rom:"gha",tip:"Breathier g sound"},
+    {en:"ṅa (nasal ng)",kn:"ಙ",rom:"ṅa",tip:"Like 'ng' in sing"},
+    {en:"ca / cha",kn:"ಚ",rom:"ca",tip:"Like 'ch' in church"},
+    {en:"cha (aspirated)",kn:"ಛ",rom:"cha",tip:"Aspirated ch"},
+    {en:"ja",kn:"ಜ",rom:"ja",tip:"Like 'j' in jump"},
+    {en:"jha (aspirated j)",kn:"ಝ",rom:"jha",tip:"Breathier j"},
+    {en:"ña (palatal nasal)",kn:"ಞ",rom:"ña",tip:"Like 'ny' in canyon"},
+    {en:"ṭa (retroflex t)",kn:"ಟ",rom:"ṭa",tip:"Tongue curls back to roof"},
+    {en:"ṭha (retroflex th)",kn:"ಠ",rom:"ṭha",tip:"Aspirated retroflex"},
+    {en:"ḍa (retroflex d)",kn:"ಡ",rom:"ḍa",tip:"Tongue curls back"},
+    {en:"ḍha (retroflex dh)",kn:"ಢ",rom:"ḍha",tip:"Aspirated retroflex"},
+    {en:"ṇa (retroflex n)",kn:"ಣ",rom:"ṇa",tip:"Retroflex nasal"},
+    {en:"ta (dental t)",kn:"ತ",rom:"ta",tip:"Tongue touches teeth"},
+    {en:"tha (dental th)",kn:"ಥ",rom:"tha",tip:"Aspirated dental"},
+    {en:"da (dental d)",kn:"ದ",rom:"da",tip:"Voiced dental"},
+    {en:"dha (aspirated d)",kn:"ಧ",rom:"dha",tip:"Breathier dental d"},
+    {en:"na",kn:"ನ",rom:"na",tip:"Dental nasal"},
+    {en:"pa",kn:"ಪ",rom:"pa",tip:"Unvoiced labial stop"},
+    {en:"pha (aspirated p)",kn:"ಫ",rom:"pha",tip:"Like 'ph' in phone"},
+    {en:"ba",kn:"ಬ",rom:"ba",tip:"Voiced labial"},
+    {en:"bha (aspirated b)",kn:"ಭ",rom:"bha",tip:"Breathier b"},
+    {en:"ma",kn:"ಮ",rom:"ma",tip:"Labial nasal"},
+    {en:"ya",kn:"ಯ",rom:"ya",tip:"Palatal approximant"},
+    {en:"ra",kn:"ರ",rom:"ra",tip:"Flapped r — common"},
+    {en:"la",kn:"ಲ",rom:"la",tip:"Lateral approximant"},
+    {en:"va",kn:"ವ",rom:"va",tip:"Labio-dental"},
+    {en:"śa (sh sound)",kn:"ಶ",rom:"śa",tip:"Like 'sh' in ship"},
+    {en:"ṣa (retroflex sh)",kn:"ಷ",rom:"ṣa",tip:"Retroflex sh"},
+    {en:"sa",kn:"ಸ",rom:"sa",tip:"Like 's' in sun"},
+    {en:"ha",kn:"ಹ",rom:"ha",tip:"Glottal fricative"},
+    {en:"ḷa (retroflex l)",kn:"ಳ",rom:"ḷa",tip:"Special to Dravidian languages"},
+  ],
+  "👋 Greetings & Phrases": [
+    {en:"Hello / Greetings",kn:"ನಮಸ್ಕಾರ",rom:"Namaskāra",tip:"Universal greeting, safe in any context"},
+    {en:"How are you? (formal)",kn:"ನೀವು ಹೇಗಿದ್ದೀರಿ?",rom:"Nīvu hēgiddīri?",tip:"Use with elders & strangers"},
+    {en:"How are you? (informal)",kn:"ಹೇಗಿದ್ದೀಯ?",rom:"Hēgiddīya?",tip:"With friends/peers"},
+    {en:"I am fine",kn:"ನಾನು ಚೆನ್ನಾಗಿದ್ದೇನೆ",rom:"Nānu cennāgiddēne",tip:""},
+    {en:"Very well, thank you",kn:"ತುಂಬಾ ಚೆನ್ನಾಗಿದ್ದೇನೆ, ಧನ್ಯವಾದ",rom:"Tumbā cennāgiddēne, dhanyavāda",tip:""},
+    {en:"Good morning",kn:"ಶುಭ ಮುಂಜಾನೆ",rom:"Śubha munjāne",tip:""},
+    {en:"Good afternoon",kn:"ಶುಭ ಮಧ್ಯಾಹ್ನ",rom:"Śubha madhyāhna",tip:""},
+    {en:"Good evening",kn:"ಶುಭ ಸಂಜೆ",rom:"Śubha sanje",tip:""},
+    {en:"Good night",kn:"ಶುಭ ರಾತ್ರಿ",rom:"Śubha rātri",tip:""},
+    {en:"Goodbye / See you",kn:"ಮತ್ತೆ ಸಿಗೋಣ",rom:"Matte sigōṇa",tip:"Lit: Let's meet again"},
+    {en:"Yes",kn:"ಹೌದು",rom:"Haudu",tip:"One of the most used words"},
+    {en:"No",kn:"ಇಲ್ಲ",rom:"Illa",tip:""},
+    {en:"Okay / Alright",kn:"ಸರಿ",rom:"Sari",tip:"Very commonly used"},
+    {en:"Please",kn:"ದಯವಿಟ್ಟು",rom:"Dayaviṭṭu",tip:"Lit: with kindness"},
+    {en:"Thank you",kn:"ಧನ್ಯವಾದಗಳು",rom:"Dhanyavādagaḷu",tip:""},
+    {en:"Thank you (casual)",kn:"ಥ್ಯಾಂಕ್ಸ್",rom:"Thyānks",tip:"Borrowed from English, very common"},
+    {en:"Sorry / Excuse me",kn:"ಕ್ಷಮಿಸಿ",rom:"Kṣamisi",tip:""},
+    {en:"No problem / It's fine",kn:"ಪರವಾಗಿಲ್ಲ",rom:"Paravāgilla",tip:"Extremely common phrase"},
+    {en:"What is your name?",kn:"ನಿಮ್ಮ ಹೆಸರೇನು?",rom:"Nimma hesarēnu?",tip:"Formal"},
+    {en:"My name is…",kn:"ನನ್ನ ಹೆಸರು…",rom:"Nanna hesaru…",tip:""},
+    {en:"Nice to meet you",kn:"ನಿಮ್ಮನ್ನು ಭೇಟಿ ಮಾಡಿ ಸಂತೋಷ",rom:"Nimmanu bhēṭi māḍi santōṣa",tip:""},
+    {en:"Where are you from?",kn:"ನೀವು ಎಲ್ಲಿಂದ ಬಂದಿದ್ದೀರಿ?",rom:"Nīvu ellinda bandiddīri?",tip:""},
+    {en:"I am from Bengaluru",kn:"ನಾನು ಬೆಂಗಳೂರಿನಿಂದ ಬಂದಿದ್ದೇನೆ",rom:"Nānu Beṅgaḷūrininda bandiddēne",tip:""},
+    {en:"Do you speak Kannada?",kn:"ನೀವು ಕನ್ನಡ ಮಾತನಾಡುತ್ತೀರಾ?",rom:"Nīvu kannaḍa mātanāḍuttīrā?",tip:""},
+    {en:"I am learning Kannada",kn:"ನಾನು ಕನ್ನಡ ಕಲಿಯುತ್ತಿದ್ದೇನೆ",rom:"Nānu kannaḍa kaliyuttiddēne",tip:""},
+    {en:"A little (I speak a little)",kn:"ಸ್ವಲ್ಪ ಬರುತ್ತದೆ",rom:"Svalpa baruttade",tip:""},
+    {en:"I don't understand",kn:"ನನಗೆ ಅರ್ಥವಾಗುತ್ತಿಲ್ಲ",rom:"Nanage arthavāguttilla",tip:""},
+    {en:"Please speak slowly",kn:"ದಯವಿಟ್ಟು ನಿಧಾನವಾಗಿ ಮಾತನಾಡಿ",rom:"Dayaviṭṭu nidhānavāgi mātanāḍi",tip:""},
+    {en:"Can you repeat that?",kn:"ಮತ್ತೊಮ್ಮೆ ಹೇಳ್ತೀರಾ?",rom:"Mattomme hēḷtīrā?",tip:""},
+    {en:"What does this mean?",kn:"ಇದರ ಅರ್ಥ ಏನು?",rom:"Idara artha ēnu?",tip:""},
+    {en:"I don't know",kn:"ನನಗೆ ಗೊತ್ತಿಲ್ಲ",rom:"Nanage gottilla",tip:""},
+    {en:"I know",kn:"ನನಗೆ ಗೊತ್ತು",rom:"Nanage gottu",tip:""},
+    {en:"Congratulations!",kn:"ಅಭಿನಂದನೆಗಳು!",rom:"Abhinandanegaḷu!",tip:""},
+    {en:"Happy birthday!",kn:"ಹುಟ್ಟುಹಬ್ಬದ ಶುಭಾಶಯಗಳು!",rom:"Huṭṭuhabba da śubhāśayagaḷu!",tip:""},
+    {en:"Welcome!",kn:"ಸ್ವಾಗತ!",rom:"Svāgata!",tip:""},
+    {en:"Take care!",kn:"ಜೋಪಾನ ಆಗಿರಿ!",rom:"Jōpāna āgiri!",tip:""},
+    {en:"Kannada is the language of gold",kn:"ಕನ್ನಡ ನಾಡಿನ ನುಡಿ",rom:"Kannaḍa nāḍina nuḍi",tip:"Cultural pride phrase"},
+  ],
+  "🔢 Numbers & Counting": [
+    {en:"0 – Zero",kn:"ಸೊನ್ನೆ",rom:"Sonne",tip:""},
+    {en:"1 – One",kn:"ಒಂದು",rom:"Ondu",tip:""},
+    {en:"2 – Two",kn:"ಎರಡು",rom:"Eraḍu",tip:""},
+    {en:"3 – Three",kn:"ಮೂರು",rom:"Mūru",tip:""},
+    {en:"4 – Four",kn:"ನಾಲ್ಕು",rom:"Nālku",tip:""},
+    {en:"5 – Five",kn:"ಐದು",rom:"Aidu",tip:""},
+    {en:"6 – Six",kn:"ಆರು",rom:"Āru",tip:""},
+    {en:"7 – Seven",kn:"ಏಳು",rom:"Ēḷu",tip:""},
+    {en:"8 – Eight",kn:"ಎಂಟು",rom:"Eṇṭu",tip:""},
+    {en:"9 – Nine",kn:"ಒಂಬತ್ತು",rom:"Ombattu",tip:""},
+    {en:"10 – Ten",kn:"ಹತ್ತು",rom:"Hattu",tip:""},
+    {en:"11 – Eleven",kn:"ಹನ್ನೊಂದು",rom:"Hannondu",tip:""},
+    {en:"12 – Twelve",kn:"ಹನ್ನೆರಡು",rom:"Hanneraḍu",tip:""},
+    {en:"13 – Thirteen",kn:"ಹದಿಮೂರು",rom:"Hadimūru",tip:""},
+    {en:"14 – Fourteen",kn:"ಹದಿನಾಲ್ಕು",rom:"Hadinālku",tip:""},
+    {en:"15 – Fifteen",kn:"ಹದಿನೈದು",rom:"Hadinaidu",tip:""},
+    {en:"16 – Sixteen",kn:"ಹದಿನಾರು",rom:"Hadināru",tip:""},
+    {en:"17 – Seventeen",kn:"ಹದಿನೇಳು",rom:"Hadinēḷu",tip:""},
+    {en:"18 – Eighteen",kn:"ಹದಿನೆಂಟು",rom:"Hadineṇṭu",tip:""},
+    {en:"19 – Nineteen",kn:"ಹತ್ತೊಂಬತ್ತು",rom:"Hattombattu",tip:""},
+    {en:"20 – Twenty",kn:"ಇಪ್ಪತ್ತು",rom:"Ippattu",tip:""},
+    {en:"21 – Twenty-one",kn:"ಇಪ್ಪತ್ತೊಂದು",rom:"Ippatt-ondu",tip:""},
+    {en:"25 – Twenty-five",kn:"ಇಪ್ಪತ್ತೈದು",rom:"Ippattaidu",tip:""},
+    {en:"30 – Thirty",kn:"ಮೂವತ್ತು",rom:"Mūvattu",tip:""},
+    {en:"40 – Forty",kn:"ನಲವತ್ತು",rom:"Nalavattu",tip:""},
+    {en:"50 – Fifty",kn:"ಐವತ್ತು",rom:"Aivattu",tip:""},
+    {en:"60 – Sixty",kn:"ಅರವತ್ತು",rom:"Aravattu",tip:""},
+    {en:"70 – Seventy",kn:"ಎಪ್ಪತ್ತು",rom:"Eppattu",tip:""},
+    {en:"80 – Eighty",kn:"ಎಂಭತ್ತು",rom:"Embhattu",tip:""},
+    {en:"90 – Ninety",kn:"ತೊಂಭತ್ತು",rom:"Tombhattu",tip:""},
+    {en:"100 – Hundred",kn:"ನೂರು",rom:"Nūru",tip:""},
+    {en:"200 – Two hundred",kn:"ಎರಡು ನೂರು",rom:"Eraḍu nūru",tip:""},
+    {en:"500 – Five hundred",kn:"ಐನೂರು",rom:"Ainūru",tip:""},
+    {en:"1000 – Thousand",kn:"ಒಂದು ಸಾವಿರ",rom:"Ondu sāvira",tip:""},
+    {en:"10,000 – Ten thousand",kn:"ಹತ್ತು ಸಾವಿರ",rom:"Hattu sāvira",tip:""},
+    {en:"1 Lakh",kn:"ಒಂದು ಲಕ್ಷ",rom:"Ondu lakṣa",tip:"Indian number system"},
+    {en:"1 Crore",kn:"ಒಂದು ಕೋಟಿ",rom:"Ondu kōṭi",tip:"Indian number system"},
+    {en:"First",kn:"ಮೊದಲನೆಯ",rom:"Modalaneya",tip:"Ordinal"},
+    {en:"Second",kn:"ಎರಡನೆಯ",rom:"Eraḍaneya",tip:"Ordinal"},
+    {en:"Third",kn:"ಮೂರನೆಯ",rom:"Mūraneya",tip:"Ordinal"},
+    {en:"Last",kn:"ಕೊನೆಯ",rom:"Koneya",tip:""},
+    {en:"Half",kn:"ಅರ್ಧ",rom:"Ardha",tip:""},
+    {en:"Quarter",kn:"ಕಾಲು",rom:"Kālu",tip:""},
+    {en:"Double",kn:"ಎರಡು ಪಟ್ಟು",rom:"Eraḍu paṭṭu",tip:""},
+    {en:"Once",kn:"ಒಮ್ಮೆ",rom:"Omme",tip:""},
+    {en:"Twice",kn:"ಎರಡು ಬಾರಿ",rom:"Eraḍu bāri",tip:""},
+  ],
+  "🌈 Colors & Adjectives": [
+    {en:"Red",kn:"ಕೆಂಪು",rom:"Kempu",tip:""},
+    {en:"Blue",kn:"ನೀಲಿ",rom:"Nīli",tip:""},
+    {en:"Green",kn:"ಹಸಿರು",rom:"Hasiru",tip:""},
+    {en:"Yellow",kn:"ಹಳದಿ",rom:"Haḷadi",tip:""},
+    {en:"White",kn:"ಬಿಳಿ",rom:"Biḷi",tip:""},
+    {en:"Black",kn:"ಕಪ್ಪು",rom:"Kappu",tip:""},
+    {en:"Orange",kn:"ಕಿತ್ತಳೆ ಬಣ್ಣ",rom:"Kittaḷe baṇṇa",tip:""},
+    {en:"Pink",kn:"ಗುಲಾಬಿ ಬಣ್ಣ",rom:"Gulābi baṇṇa",tip:""},
+    {en:"Purple / Violet",kn:"ನೇರಳೆ",rom:"Nēraḷe",tip:""},
+    {en:"Brown",kn:"ಕಂದು",rom:"Kandu",tip:""},
+    {en:"Grey",kn:"ಬೂದು",rom:"Būdu",tip:""},
+    {en:"Sky blue",kn:"ಆಕಾಶ ನೀಲಿ",rom:"Ākāśa nīli",tip:""},
+    {en:"Gold colour",kn:"ಚಿನ್ನದ ಬಣ್ಣ",rom:"Cinnada baṇṇa",tip:""},
+    {en:"Silver colour",kn:"ಬೆಳ್ಳಿ ಬಣ್ಣ",rom:"Beḷḷi baṇṇa",tip:""},
+    {en:"Big / Large",kn:"ದೊಡ್ಡ",rom:"Doḍḍa",tip:"Very common adjective"},
+    {en:"Small / Little",kn:"ಚಿಕ್ಕ / ಸಣ್ಣ",rom:"Cikka / Saṇṇa",tip:""},
+    {en:"Long / Tall",kn:"ಉದ್ದ",rom:"Udda",tip:""},
+    {en:"Short (height)",kn:"ಗಿಡ್ಡ",rom:"Giḍḍa",tip:""},
+    {en:"Heavy",kn:"ಭಾರ",rom:"Bhāra",tip:""},
+    {en:"Light (weight)",kn:"ಹಗುರ",rom:"Hagura",tip:""},
+    {en:"Fast / Quick",kn:"ವೇಗ / ಚುರುಕು",rom:"Vēga / Curuku",tip:""},
+    {en:"Slow",kn:"ನಿಧಾನ",rom:"Nidhāna",tip:""},
+    {en:"New",kn:"ಹೊಸ",rom:"Hosa",tip:""},
+    {en:"Old",kn:"ಹಳೆಯ",rom:"Haḷeya",tip:"For objects"},
+    {en:"Good",kn:"ಒಳ್ಳೆಯ",rom:"Oḷḷeya",tip:""},
+    {en:"Bad",kn:"ಕೆಟ್ಟ",rom:"Keṭṭa",tip:""},
+    {en:"Beautiful / Pretty",kn:"ಸುಂದರ",rom:"Sundara",tip:""},
+    {en:"Clean",kn:"ಶುಚಿ",rom:"Śuci",tip:""},
+    {en:"Dirty",kn:"ಕೊಳಕು",rom:"Koḷaku",tip:""},
+    {en:"Hot (temperature)",kn:"ಬಿಸಿ",rom:"Bisi",tip:""},
+    {en:"Cold",kn:"ತಣ್ಣಗೆ",rom:"Taṇṇage",tip:""},
+    {en:"Tasty / Delicious",kn:"ರುಚಿ",rom:"Ruci",tip:""},
+    {en:"Spicy / Hot (food)",kn:"ಖಾರ",rom:"Khāra",tip:""},
+    {en:"Sweet",kn:"ಸಿಹಿ",rom:"Sihi",tip:""},
+    {en:"Sour",kn:"ಹುಳಿ",rom:"Huḷi",tip:""},
+    {en:"Hard / Difficult",kn:"ಕಷ್ಟ",rom:"Kaṣṭa",tip:""},
+    {en:"Easy",kn:"ಸುಲಭ",rom:"Sulabha",tip:""},
+    {en:"Correct / Right",kn:"ಸರಿ",rom:"Sari",tip:""},
+    {en:"Wrong",kn:"ತಪ್ಪು",rom:"Tappu",tip:""},
+    {en:"Empty",kn:"ಖಾಲಿ",rom:"Khāli",tip:""},
+    {en:"Near / Close",kn:"ಹತ್ತಿರ",rom:"Hattira",tip:""},
+    {en:"Far / Distant",kn:"ದೂರ",rom:"Dūra",tip:""},
+    {en:"More / Extra",kn:"ಇನ್ನಷ್ಟು / ಜಾಸ್ತಿ",rom:"Innaṣṭu / Jāsti",tip:""},
+    {en:"Less",kn:"ಕಡಿಮೆ",rom:"Kaḍime",tip:""},
+    {en:"Very",kn:"ತುಂಬಾ",rom:"Tumbā",tip:"Most common intensifier"},
+    {en:"A little / Slightly",kn:"ಸ್ವಲ್ಪ",rom:"Svalpa",tip:""},
+  ],
+  "📅 Time, Days & Months": [
+    {en:"Monday",kn:"ಸೋಮವಾರ",rom:"Sōmavāra",tip:"Soma = Moon"},
+    {en:"Tuesday",kn:"ಮಂಗಳವಾರ",rom:"Maṅgaḷavāra",tip:"Mangala = Mars"},
+    {en:"Wednesday",kn:"ಬುಧವಾರ",rom:"Budhavāra",tip:"Budha = Mercury"},
+    {en:"Thursday",kn:"ಗುರುವಾರ",rom:"Guruvāra",tip:"Guru = Jupiter"},
+    {en:"Friday",kn:"ಶುಕ್ರವಾರ",rom:"Śukravāra",tip:"Shukra = Venus"},
+    {en:"Saturday",kn:"ಶನಿವಾರ",rom:"Śanivāra",tip:"Shani = Saturn"},
+    {en:"Sunday",kn:"ಭಾನುವಾರ",rom:"Bhānuvāra",tip:"Bhanu = Sun"},
+    {en:"Today",kn:"ಇಂದು",rom:"Indu",tip:""},
+    {en:"Yesterday",kn:"ನಿನ್ನೆ",rom:"Ninne",tip:""},
+    {en:"Tomorrow",kn:"ನಾಳೆ",rom:"Nāḷe",tip:""},
+    {en:"Day after tomorrow",kn:"ನಾಡಿದ್ದು",rom:"Nāḍiddu",tip:""},
+    {en:"Day before yesterday",kn:"ಮೊನ್ನೆ",rom:"Monne",tip:""},
+    {en:"Morning",kn:"ಬೆಳಗ್ಗೆ",rom:"Beḷagge",tip:""},
+    {en:"Afternoon",kn:"ಮಧ್ಯಾಹ್ನ",rom:"Madhyāhna",tip:""},
+    {en:"Evening",kn:"ಸಂಜೆ",rom:"Sanje",tip:""},
+    {en:"Night",kn:"ರಾತ್ರಿ",rom:"Rātri",tip:""},
+    {en:"Midnight",kn:"ಮಧ್ಯರಾತ್ರಿ",rom:"Madhyarātri",tip:""},
+    {en:"Now",kn:"ಈಗ",rom:"Īga",tip:""},
+    {en:"Later",kn:"ನಂತರ",rom:"Nantara",tip:""},
+    {en:"Soon",kn:"ಶೀಘ್ರದಲ್ಲಿ",rom:"Śīghradalli",tip:""},
+    {en:"Always",kn:"ಯಾವಾಗಲೂ",rom:"Yāvāgalū",tip:""},
+    {en:"Never",kn:"ಎಂದಿಗೂ ಇಲ್ಲ",rom:"Endigū illa",tip:""},
+    {en:"Sometimes",kn:"ಕೆಲವೊಮ್ಮೆ",rom:"Kelavomme",tip:""},
+    {en:"Often",kn:"ಆಗಾಗ",rom:"Āgāga",tip:""},
+    {en:"January",kn:"ಜನವರಿ",rom:"Janavari",tip:""},
+    {en:"February",kn:"ಫೆಬ್ರವರಿ",rom:"Phebravari",tip:""},
+    {en:"March",kn:"ಮಾರ್ಚ್",rom:"Mārc",tip:""},
+    {en:"April",kn:"ಏಪ್ರಿಲ್",rom:"Ēpril",tip:""},
+    {en:"May",kn:"ಮೇ",rom:"Mē",tip:""},
+    {en:"June",kn:"ಜೂನ್",rom:"Jūn",tip:""},
+    {en:"July",kn:"ಜುಲೈ",rom:"Julai",tip:""},
+    {en:"August",kn:"ಆಗಸ್ಟ್",rom:"Āgasṭ",tip:""},
+    {en:"September",kn:"ಸೆಪ್ಟೆಂಬರ್",rom:"Sepṭembar",tip:""},
+    {en:"October",kn:"ಅಕ್ಟೋಬರ್",rom:"Akṭōbar",tip:""},
+    {en:"November",kn:"ನವೆಂಬರ್",rom:"Navembar",tip:""},
+    {en:"December",kn:"ಡಿಸೆಂಬರ್",rom:"Ḍisembar",tip:""},
+    {en:"What time is it?",kn:"ಈಗ ಎಷ್ಟು ಗಂಟೆ?",rom:"Īga eṣṭu gaṇṭe?",tip:""},
+    {en:"It is 3 o'clock",kn:"ಮೂರು ಗಂಟೆ ಆಗಿದೆ",rom:"Mūru gaṇṭe āgide",tip:""},
+    {en:"Half past two (2:30)",kn:"ಎರಡೂವರೆ ಗಂಟೆ",rom:"Eraḍūvare gaṇṭe",tip:""},
+    {en:"Week",kn:"ವಾರ",rom:"Vāra",tip:""},
+    {en:"Month",kn:"ತಿಂಗಳು",rom:"Tingaḷu",tip:""},
+    {en:"Year",kn:"ವರ್ಷ",rom:"Varṣa",tip:""},
+    {en:"This week",kn:"ಈ ವಾರ",rom:"Ī vāra",tip:""},
+    {en:"Last week",kn:"ಕಳೆದ ವಾರ",rom:"Kaḷeda vāra",tip:""},
+    {en:"Next week",kn:"ಮುಂದಿನ ವಾರ",rom:"Mundina vāra",tip:""},
+    {en:"Minute",kn:"ನಿಮಿಷ",rom:"Nimiṣa",tip:""},
+    {en:"Hour",kn:"ಗಂಟೆ",rom:"Gaṇṭe",tip:""},
+    {en:"One moment please",kn:"ಒಂದು ನಿಮಿಷ",rom:"Ondu nimiṣa",tip:""},
+  ],
+  "📚 Grammar – Pronouns & Core": [
+    {en:"I / Me",kn:"ನಾನು",rom:"Nānu",tip:"Subject pronoun"},
+    {en:"You (formal/respectful)",kn:"ನೀವು",rom:"Nīvu",tip:"Use for elders & strangers"},
+    {en:"You (informal)",kn:"ನೀನು",rom:"Nīnu",tip:"Friends, younger people"},
+    {en:"He / She (formal)",kn:"ಅವರು",rom:"Avaru",tip:"Also used as 'they'"},
+    {en:"He (informal)",kn:"ಅವನು",rom:"Avanu",tip:""},
+    {en:"She (informal)",kn:"ಅವಳು",rom:"Avaḷu",tip:""},
+    {en:"It / That (neuter)",kn:"ಅದು",rom:"Adu",tip:""},
+    {en:"We",kn:"ನಾವು",rom:"Nāvu",tip:""},
+    {en:"They (formal/plural)",kn:"ಅವರು",rom:"Avaru",tip:"Same as formal he/she"},
+    {en:"This (neuter)",kn:"ಇದು",rom:"Idu",tip:""},
+    {en:"These",kn:"ಇವು",rom:"Ivu",tip:""},
+    {en:"Those",kn:"ಅವು",rom:"Avu",tip:""},
+    {en:"Here",kn:"ಇಲ್ಲಿ",rom:"Illi",tip:""},
+    {en:"There",kn:"ಅಲ್ಲಿ",rom:"Alli",tip:""},
+    {en:"My / Mine",kn:"ನನ್ನ",rom:"Nanna",tip:""},
+    {en:"Your (formal)",kn:"ನಿಮ್ಮ",rom:"Nimma",tip:""},
+    {en:"Your (informal)",kn:"ನಿನ್ನ",rom:"Ninna",tip:""},
+    {en:"His",kn:"ಅವನ",rom:"Avana",tip:""},
+    {en:"Her",kn:"ಅವಳ",rom:"Avaḷa",tip:""},
+    {en:"Our",kn:"ನಮ್ಮ",rom:"Namma",tip:""},
+    {en:"Their",kn:"ಅವರ",rom:"Avara",tip:""},
+    {en:"What?",kn:"ಏನು?",rom:"Ēnu?",tip:"Most used question word"},
+    {en:"Who?",kn:"ಯಾರು?",rom:"Yāru?",tip:""},
+    {en:"Where?",kn:"ಎಲ್ಲಿ?",rom:"Elli?",tip:""},
+    {en:"When?",kn:"ಯಾವಾಗ?",rom:"Yāvāga?",tip:""},
+    {en:"Why?",kn:"ಯಾಕೆ?",rom:"Yāke?",tip:""},
+    {en:"How?",kn:"ಹೇಗೆ?",rom:"Hēge?",tip:""},
+    {en:"How much / many?",kn:"ಎಷ್ಟು?",rom:"Eṣṭu?",tip:"Very useful!"},
+    {en:"Which?",kn:"ಯಾವ?",rom:"Yāva?",tip:""},
+    {en:"And",kn:"ಮತ್ತು",rom:"Mattu",tip:""},
+    {en:"But",kn:"ಆದರೆ",rom:"Ādare",tip:""},
+    {en:"Or",kn:"ಅಥವಾ",rom:"Athavā",tip:""},
+    {en:"Because",kn:"ಏಕೆಂದರೆ",rom:"Ēkendare",tip:""},
+    {en:"So / Therefore",kn:"ಆದ್ದರಿಂದ",rom:"Āddharinda",tip:""},
+    {en:"If",kn:"ಒಂದು ವೇಳೆ",rom:"Ondu vēḷe",tip:""},
+    {en:"Already",kn:"ಆಗಲೇ",rom:"Āgalē",tip:""},
+    {en:"Still / Yet",kn:"ಇನ್ನೂ",rom:"Innū",tip:""},
+    {en:"Only / Just",kn:"ಮಾತ್ರ",rom:"Mātra",tip:""},
+    {en:"Also / Too",kn:"ಕೂಡ / ಸಹ",rom:"Kūḍa / Saha",tip:""},
+    {en:"Again",kn:"ಮತ್ತೆ",rom:"Matte",tip:""},
+  ],
+  "🔤 Grammar – Essential Verbs": [
+    {en:"To be / Exist (root)",kn:"ಇರು",rom:"Iru",tip:"Root form"},
+    {en:"I am (here)",kn:"ನಾನು ಇದ್ದೇನೆ",rom:"Nānu iddēne",tip:""},
+    {en:"It is / There is",kn:"ಇದೆ",rom:"Ide",tip:"Ubiquitous word"},
+    {en:"It is not / There isn't",kn:"ಇಲ್ಲ",rom:"Illa",tip:""},
+    {en:"I go",kn:"ನಾನು ಹೋಗುತ್ತೇನೆ",rom:"Nānu hōguttēne",tip:""},
+    {en:"I come",kn:"ನಾನು ಬರುತ್ತೇನೆ",rom:"Nānu baruttēne",tip:""},
+    {en:"I eat",kn:"ನಾನು ತಿನ್ನುತ್ತೇನೆ",rom:"Nānu tinnuttēne",tip:""},
+    {en:"I drink",kn:"ನಾನು ಕುಡಿಯುತ್ತೇನೆ",rom:"Nānu kuḍiyuttēne",tip:""},
+    {en:"I speak / talk",kn:"ನಾನು ಮಾತನಾಡುತ್ತೇನೆ",rom:"Nānu mātanāḍuttēne",tip:""},
+    {en:"I want / I need",kn:"ನನಗೆ ಬೇಕು",rom:"Nanage bēku",tip:"Lit: 'to me is needed'"},
+    {en:"I don't want",kn:"ನನಗೆ ಬೇಡ",rom:"Nanage bēḍa",tip:""},
+    {en:"I like",kn:"ನನಗೆ ಇಷ್ಟ",rom:"Nanage iṣṭa",tip:"Lit: 'to me pleasing'"},
+    {en:"I don't like",kn:"ನನಗೆ ಇಷ್ಟ ಇಲ್ಲ",rom:"Nanage iṣṭa illa",tip:""},
+    {en:"I see / look",kn:"ನಾನು ನೋಡುತ್ತೇನೆ",rom:"Nānu nōḍuttēne",tip:""},
+    {en:"I listen / hear",kn:"ನಾನು ಕೇಳುತ್ತೇನೆ",rom:"Nānu kēḷuttēne",tip:""},
+    {en:"I buy",kn:"ನಾನು ಕೊಳ್ಳುತ್ತೇನೆ",rom:"Nānu koḷḷuttēne",tip:""},
+    {en:"I give",kn:"ನಾನು ಕೊಡುತ್ತೇನೆ",rom:"Nānu koḍuttēne",tip:""},
+    {en:"I sit",kn:"ನಾನು ಕೂರುತ್ತೇನೆ",rom:"Nānu kūruttēne",tip:""},
+    {en:"I stand",kn:"ನಾನು ನಿಲ್ಲುತ್ತೇನೆ",rom:"Nānu nilluttēne",tip:""},
+    {en:"I sleep",kn:"ನಾನು ಮಲಗುತ್ತೇನೆ",rom:"Nānu malaguttēne",tip:""},
+    {en:"I work",kn:"ನಾನು ಕೆಲಸ ಮಾಡುತ್ತೇನೆ",rom:"Nānu kelasa māḍuttēne",tip:""},
+    {en:"I study",kn:"ನಾನು ಓದುತ್ತೇನೆ",rom:"Nānu ōduttēne",tip:""},
+    {en:"I write",kn:"ನಾನು ಬರೆಯುತ್ತೇನೆ",rom:"Nānu bareyuttēne",tip:""},
+    {en:"I walk",kn:"ನಾನು ನಡೆಯುತ್ತೇನೆ",rom:"Nānu naḍeyuttēne",tip:""},
+    {en:"I run",kn:"ನಾನು ಓಡುತ್ತೇನೆ",rom:"Nānu ōḍuttēne",tip:""},
+    {en:"I call (phone)",kn:"ನಾನು ಕರೆ ಮಾಡುತ್ತೇನೆ",rom:"Nānu kare māḍuttēne",tip:""},
+    {en:"I pay",kn:"ನಾನು ಪಾವತಿ ಮಾಡುತ್ತೇನೆ",rom:"Nānu pāvati māḍuttēne",tip:""},
+    {en:"I wait",kn:"ನಾನು ಕಾಯುತ್ತೇನೆ",rom:"Nānu kāyuttēne",tip:""},
+    {en:"I think",kn:"ನಾನು ಯೋಚಿಸುತ್ತೇನೆ",rom:"Nānu yōcisuttēne",tip:""},
+    {en:"I remember",kn:"ನನಗೆ ನೆನಪಿದೆ",rom:"Nanage nenapide",tip:""},
+    {en:"I forget",kn:"ನಾನು ಮರೆಯುತ್ತೇನೆ",rom:"Nānu mareyuttēne",tip:""},
+    {en:"I help",kn:"ನಾನು ಸಹಾಯ ಮಾಡುತ್ತೇನೆ",rom:"Nānu sahāya māḍuttēne",tip:""},
+    {en:"Please come (formal)",kn:"ಬನ್ನಿ",rom:"Banni",tip:"Common polite command"},
+    {en:"Please go (formal)",kn:"ಹೋಗಿ",rom:"Hōgi",tip:""},
+    {en:"Please sit (formal)",kn:"ಕೂರಿ",rom:"Kūri",tip:""},
+    {en:"Please give (formal)",kn:"ಕೊಡಿ",rom:"Koḍi",tip:"Essential shopping word"},
+    {en:"Don't do (formal)",kn:"ಮಾಡಬೇಡಿ",rom:"Māḍabēḍi",tip:""},
+    {en:"He/She goes (formal)",kn:"ಅವರು ಹೋಗುತ್ತಾರೆ",rom:"Avaru hōguttāre",tip:""},
+    {en:"We go",kn:"ನಾವು ಹೋಗುತ್ತೇವೆ",rom:"Nāvu hōguttēve",tip:""},
+  ],
+  "⏪ Grammar – Past & Future": [
+    {en:"I went",kn:"ನಾನು ಹೋದೆ",rom:"Nānu hōde",tip:""},
+    {en:"I came",kn:"ನಾನು ಬಂದೆ",rom:"Nānu bande",tip:""},
+    {en:"I ate",kn:"ನಾನು ತಿಂದೆ",rom:"Nānu tinde",tip:""},
+    {en:"I drank",kn:"ನಾನು ಕುಡಿದೆ",rom:"Nānu kuḍide",tip:""},
+    {en:"I spoke",kn:"ನಾನು ಮಾತನಾಡಿದೆ",rom:"Nānu mātanāḍide",tip:""},
+    {en:"I saw",kn:"ನಾನು ನೋಡಿದೆ",rom:"Nānu nōḍide",tip:""},
+    {en:"I bought",kn:"ನಾನು ಕೊಂಡೆ",rom:"Nānu koṇḍe",tip:""},
+    {en:"I did / I made",kn:"ನಾನು ಮಾಡಿದೆ",rom:"Nānu māḍide",tip:""},
+    {en:"I gave",kn:"ನಾನು ಕೊಟ್ಟೆ",rom:"Nānu koṭṭe",tip:""},
+    {en:"I slept",kn:"ನಾನು ಮಲಗಿದೆ",rom:"Nānu malagide",tip:""},
+    {en:"He/She came (formal)",kn:"ಅವರು ಬಂದರು",rom:"Avaru bandaru",tip:""},
+    {en:"We went",kn:"ನಾವು ಹೋದೆವು",rom:"Nāvu hōdevu",tip:""},
+    {en:"Did you eat?",kn:"ನೀವು ಊಟ ಮಾಡಿದ್ದೀರಾ?",rom:"Nīvu ūṭa māḍiddīrā?",tip:""},
+    {en:"I have eaten (already)",kn:"ನಾನು ಊಟ ಮಾಡಿದ್ದೇನೆ",rom:"Nānu ūṭa māḍiddēne",tip:"Perfect tense"},
+    {en:"I have not eaten",kn:"ನಾನು ಊಟ ಮಾಡಿಲ್ಲ",rom:"Nānu ūṭa māḍilla",tip:""},
+    {en:"I will come tomorrow",kn:"ನಾನು ನಾಳೆ ಬರುತ್ತೇನೆ",rom:"Nānu nāḷe baruttēne",tip:""},
+    {en:"I will not come",kn:"ನಾನು ಬರುವುದಿಲ್ಲ",rom:"Nānu baruvudilla",tip:""},
+    {en:"Will you come?",kn:"ನೀವು ಬರುತ್ತೀರಾ?",rom:"Nīvu baruttīrā?",tip:""},
+    {en:"It was very good",kn:"ತುಂಬಾ ಚೆನ್ನಾಗಿತ್ತು",rom:"Tumbā cennāgittu",tip:""},
+    {en:"Was it good?",kn:"ಚೆನ್ನಾಗಿತ್ತಾ?",rom:"Cennāgittā?",tip:""},
+  ],
+  "👨‍👩‍👧 Family & People": [
+    {en:"Father",kn:"ಅಪ್ಪ / ತಂದೆ",rom:"Appa / Tande",tip:"Appa is informal/loving"},
+    {en:"Mother",kn:"ಅಮ್ಮ / ತಾಯಿ",rom:"Amma / Tāyi",tip:"Amma is informal/loving"},
+    {en:"Elder brother",kn:"ಅಣ್ಣ",rom:"Aṇṇa",tip:""},
+    {en:"Younger brother",kn:"ತಮ್ಮ",rom:"Tamma",tip:""},
+    {en:"Elder sister",kn:"ಅಕ್ಕ",rom:"Akka",tip:""},
+    {en:"Younger sister",kn:"ತಂಗಿ",rom:"Tangi",tip:""},
+    {en:"Grandfather (paternal)",kn:"ತಾತ",rom:"Tāta",tip:""},
+    {en:"Grandmother (paternal)",kn:"ಅಜ್ಜಿ",rom:"Ajji",tip:""},
+    {en:"Son",kn:"ಮಗ",rom:"Maga",tip:""},
+    {en:"Daughter",kn:"ಮಗಳು",rom:"Magaḷu",tip:""},
+    {en:"Husband",kn:"ಗಂಡ",rom:"Gaṇḍa",tip:""},
+    {en:"Wife",kn:"ಹೆಂಡತಿ",rom:"Heṇḍati",tip:""},
+    {en:"Uncle (father's elder brother)",kn:"ದೊಡ್ಡಪ್ಪ",rom:"Doḍḍappa",tip:""},
+    {en:"Uncle (father's younger brother)",kn:"ಚಿಕ್ಕಪ್ಪ",rom:"Cikkappa",tip:""},
+    {en:"Aunt (father's sister)",kn:"ಅತ್ತೆ",rom:"Atte",tip:""},
+    {en:"Uncle (mother's brother)",kn:"ಮಾವ",rom:"Māva",tip:""},
+    {en:"Aunt (mother's elder sister)",kn:"ದೊಡ್ಡಮ್ಮ",rom:"Doḍḍamma",tip:""},
+    {en:"Brother-in-law",kn:"ಭಾವ",rom:"Bhāva",tip:""},
+    {en:"Sister-in-law",kn:"ನಾದಿನಿ",rom:"Nādini",tip:""},
+    {en:"Grandchild",kn:"ಮೊಮ್ಮಗ",rom:"Mommaga",tip:""},
+    {en:"Friend",kn:"ಗೆಳೆಯ / ಸ್ನೇಹಿತ",rom:"Geḷeya / Snēhita",tip:""},
+    {en:"Neighbour",kn:"ನೆರೆಯವರು",rom:"Nereyavaru",tip:""},
+    {en:"Child",kn:"ಮಗು",rom:"Magu",tip:""},
+    {en:"Man / Male",kn:"ಗಂಡಸು",rom:"Gaṇḍasu",tip:""},
+    {en:"Woman / Female",kn:"ಹೆಂಗಸು",rom:"Heṅgasu",tip:""},
+    {en:"Boy",kn:"ಹುಡುಗ",rom:"Huḍuga",tip:""},
+    {en:"Girl",kn:"ಹುಡುಗಿ",rom:"Huḍugi",tip:""},
+    {en:"Baby / Infant",kn:"ಶಿಶು",rom:"Śiśu",tip:""},
+    {en:"Guest",kn:"ಅತಿಥಿ",rom:"Atithi",tip:""},
+    {en:"Family",kn:"ಕುಟುಂಬ",rom:"Kuṭumba",tip:""},
+  ],
+  "🛒 Shopping & Market": [
+    {en:"Shop / Store",kn:"ಅಂಗಡಿ",rom:"Aṅgaḍi",tip:""},
+    {en:"Market",kn:"ಮಾರ್ಕೆಟ್ / ಸಂತೆ",rom:"Mārkeṭ / Sante",tip:"Sante = weekly market"},
+    {en:"How much does this cost?",kn:"ಇದರ ಬೆಲೆ ಎಷ್ಟು?",rom:"Idara bele eṣṭu?",tip:"Most essential shopping phrase!"},
+    {en:"That is too expensive",kn:"ತುಂಬಾ ದುಬಾರಿ",rom:"Tumbā dubāri",tip:""},
+    {en:"Can you lower the price?",kn:"ಬೆಲೆ ಕಡಿಮೆ ಮಾಡ್ತೀರಾ?",rom:"Bele kaḍime māḍtīrā?",tip:""},
+    {en:"Give a discount please",kn:"ಡಿಸ್ಕೌಂಟ್ ಕೊಡಿ",rom:"Diskauṇṭ koḍi",tip:""},
+    {en:"What is the final / last price?",kn:"ಕಡೆ ಬೆಲೆ ಎಷ್ಟು?",rom:"Kaḍe bele eṣṭu?",tip:"For bargaining"},
+    {en:"I will take this one",kn:"ನಾನು ಇದನ್ನು ತೆಗೆದುಕೊಳ್ಳುತ್ತೇನೆ",rom:"Nānu idannu tegedukoḷḷuttēne",tip:""},
+    {en:"I don't want it",kn:"ಬೇಡ",rom:"Bēḍa",tip:"Quick refusal"},
+    {en:"Show me this",kn:"ಇದನ್ನು ತೋರಿಸಿ",rom:"Idannu tōrisi",tip:""},
+    {en:"I need a bag",kn:"ನನಗೆ ಒಂದು ಚೀಲ ಬೇಕು",rom:"Nanage ondu cīla bēku",tip:""},
+    {en:"Please give a receipt",kn:"ರಸೀದಿ ಕೊಡಿ",rom:"Rasīdi koḍi",tip:""},
+    {en:"Cash payment",kn:"ನಗದು ಪಾವತಿ",rom:"Nagadu pāvati",tip:""},
+    {en:"Card / UPI payment",kn:"ಕಾರ್ಡ್ / ಯುಪಿಐ ಪಾವತಿ",rom:"Kārḍ / UPI pāvati",tip:""},
+    {en:"Change (money back)",kn:"ಚಿಲ್ಲರೆ",rom:"Cillare",tip:""},
+    {en:"Do you have change?",kn:"ಚಿಲ್ಲರೆ ಇದೆಯಾ?",rom:"Cillare ideyā?",tip:""},
+    {en:"I want to return this",kn:"ನಾನು ಇದನ್ನು ವಾಪಸ್ ಮಾಡಬೇಕು",rom:"Nānu idannu vāpas māḍabēku",tip:""},
+    {en:"Do you have a bigger size?",kn:"ದೊಡ್ಡ ಸೈಜ್ ಇದೆಯಾ?",rom:"Doḍḍa saij ideyā?",tip:""},
+    {en:"Do you have a smaller size?",kn:"ಚಿಕ್ಕ ಸೈಜ್ ಇದೆಯಾ?",rom:"Cikka saij ideyā?",tip:""},
+    {en:"What colours do you have?",kn:"ಯಾವ ಬಣ್ಣ ಇದೆ?",rom:"Yāva baṇṇa ide?",tip:""},
+    {en:"I'm just looking (browsing)",kn:"ನಾನು ಸುಮ್ಮನೆ ನೋಡುತ್ತಿದ್ದೇನೆ",rom:"Nānu summane nōḍuttiddēne",tip:""},
+    {en:"Is this original / genuine?",kn:"ಇದು ಒರಿಜಿನಲ್ ಆ?",rom:"Idu Original ā?",tip:""},
+    {en:"Grocery shop",kn:"ಕಿರಾಣಿ ಅಂಗಡಿ",rom:"Kirāṇi aṅgaḍi",tip:""},
+    {en:"Vegetable shop",kn:"ತರಕಾರಿ ಅಂಗಡಿ",rom:"Tarakāri aṅgaḍi",tip:""},
+    {en:"Pharmacy / Medical shop",kn:"ಮೆಡಿಕಲ್ ಅಂಗಡಿ",rom:"Medikal aṅgaḍi",tip:""},
+    {en:"Cloth / Textile shop",kn:"ಬಟ್ಟೆ ಅಂಗಡಿ",rom:"Baṭṭe aṅgaḍi",tip:""},
+    {en:"1 kg of tomatoes please",kn:"ಒಂದು ಕೇಜಿ ಟೊಮ್ಯಾಟೋ ಕೊಡಿ",rom:"Ondu kēji Ṭomyāṭō koḍi",tip:""},
+    {en:"Half kg of onions",kn:"ಅರ್ಧ ಕೇಜಿ ಈರುಳ್ಳಿ",rom:"Ardha kēji īruḷḷi",tip:""},
+    {en:"How much per kg?",kn:"ಒಂದು ಕೇಜಿಗೆ ಎಷ್ಟು?",rom:"Ondu kējige eṣṭu?",tip:""},
+    {en:"Do you do home delivery?",kn:"ಮನೆಗೆ ತಲುಪಿಸ್ತೀರಾ?",rom:"Manege talupistīrā?",tip:""},
+    {en:"Bill / Total amount",kn:"ಒಟ್ಟು ಮೊತ್ತ",rom:"Oṭṭu motta",tip:""},
+  ],
+  "🚌 Travel & Directions": [
+    {en:"Where is the bus stop?",kn:"ಬಸ್ ನಿಲ್ದಾಣ ಎಲ್ಲಿ ಇದೆ?",rom:"Bas nildāṇa elli ide?",tip:""},
+    {en:"Bus",kn:"ಬಸ್",rom:"Bas",tip:""},
+    {en:"Auto-rickshaw",kn:"ಆಟೋ",rom:"Āṭō",tip:"Most common local transport in Karnataka"},
+    {en:"Taxi / Cab",kn:"ಟ್ಯಾಕ್ಸಿ",rom:"Ṭyāksi",tip:""},
+    {en:"Train",kn:"ರೈಲು",rom:"Railu",tip:""},
+    {en:"Metro train",kn:"ಮೆಟ್ರೋ",rom:"Meṭrō",tip:"Namma Metro in Bengaluru"},
+    {en:"Railway station",kn:"ರೈಲ್ವೆ ನಿಲ್ದಾಣ",rom:"Railve nildāṇa",tip:""},
+    {en:"Airport",kn:"ವಿಮಾನ ನಿಲ್ದಾಣ",rom:"Vimāna nildāṇa",tip:""},
+    {en:"How far is it?",kn:"ಅದು ಎಷ್ಟು ದೂರ?",rom:"Adu eṣṭu dūra?",tip:""},
+    {en:"How long does it take?",kn:"ಎಷ್ಟು ಸಮಯ ಬೇಕು?",rom:"Eṣṭu samaya bēku?",tip:""},
+    {en:"About 10 minutes",kn:"ಸರಿಸುಮಾರು ಹತ್ತು ನಿಮಿಷ",rom:"Sarisumāru hattu nimiṣa",tip:""},
+    {en:"Turn left",kn:"ಎಡಕ್ಕೆ ತಿರುಗಿ",rom:"Eḍakke tirugi",tip:""},
+    {en:"Turn right",kn:"ಬಲಕ್ಕೆ ತಿರುಗಿ",rom:"Balakke tirugi",tip:""},
+    {en:"Go straight",kn:"ನೇರವಾಗಿ ಹೋಗಿ",rom:"Nēravāgi hōgi",tip:""},
+    {en:"Stop here please",kn:"ಇಲ್ಲಿ ನಿಲ್ಲಿ",rom:"Illi nilli",tip:"Tell auto/taxi driver"},
+    {en:"Please drive slowly",kn:"ನಿಧಾನವಾಗಿ ಹೋಗಿ",rom:"Nidhānavāgi hōgi",tip:""},
+    {en:"I want to go to Majestic",kn:"ನನಗೆ ಮೆಜೆಸ್ಟಿಕ್ ಗೆ ಹೋಗಬೇಕು",rom:"Nanage Mejesṭikge hōgabēku",tip:""},
+    {en:"What is the fare?",kn:"ಚಾರ್ಜ್ ಎಷ್ಟು?",rom:"Cārj eṣṭu?",tip:""},
+    {en:"Use the meter please",kn:"ಮೀಟರ್ ಉಪಯೋಗಿಸಿ",rom:"Mīṭar upayōgisi",tip:""},
+    {en:"One ticket to Mysore",kn:"ಮೈಸೂರಿಗೆ ಒಂದು ಟಿಕೆಟ್ ಕೊಡಿ",rom:"Maisūrige ondu ṭikeṭ koḍi",tip:""},
+    {en:"Left",kn:"ಎಡ",rom:"Eḍa",tip:""},
+    {en:"Right",kn:"ಬಲ",rom:"Bala",tip:""},
+    {en:"Straight ahead",kn:"ನೇರ",rom:"Nēra",tip:""},
+    {en:"North",kn:"ಉತ್ತರ",rom:"Uttara",tip:""},
+    {en:"South",kn:"ದಕ್ಷಿಣ",rom:"Dakṣiṇa",tip:""},
+    {en:"East",kn:"ಪೂರ್ವ",rom:"Pūrva",tip:""},
+    {en:"West",kn:"ಪಶ್ಚಿಮ",rom:"Paścima",tip:""},
+    {en:"Opposite / Across from",kn:"ಎದುರಿಗೆ",rom:"Edurige",tip:""},
+    {en:"Behind",kn:"ಹಿಂದೆ",rom:"Hinde",tip:""},
+    {en:"In front of",kn:"ಮುಂದೆ",rom:"Munde",tip:""},
+    {en:"Next to / Beside",kn:"ಪಕ್ಕದಲ್ಲಿ",rom:"Pakkadalli",tip:""},
+    {en:"Road / Street",kn:"ರಸ್ತೆ",rom:"Raste",tip:""},
+    {en:"Traffic jam",kn:"ಟ್ರಾಫಿಕ್ ಜಾಮ್",rom:"Ṭrāphik jām",tip:"Very relevant in Bengaluru!"},
+  ],
+  "🍽️ Food & Restaurants": [
+    {en:"Restaurant / Hotel (local term)",kn:"ಹೋಟೆಲ್",rom:"Hōṭel",tip:"In Karnataka 'hotel' means restaurant"},
+    {en:"Menu please",kn:"ಮೆನು ಕೊಡಿ",rom:"Menu koḍi",tip:""},
+    {en:"I am hungry",kn:"ನನಗೆ ಹಸಿವಾಗಿದೆ",rom:"Nanage hasivāgide",tip:""},
+    {en:"I am very thirsty",kn:"ನನಗೆ ತುಂಬಾ ಬಾಯಾರಿಕೆ ಆಗಿದೆ",rom:"Nanage tumbā bāyārike āgide",tip:""},
+    {en:"Water please",kn:"ನೀರು ಕೊಡಿ",rom:"Nīru koḍi",tip:"Always useful!"},
+    {en:"Idli",kn:"ಇಡ್ಲಿ",rom:"Iḍli",tip:"Steamed rice cake"},
+    {en:"Dosa",kn:"ದೋಸೆ",rom:"Dōse",tip:"Crispy rice crepe"},
+    {en:"Masala dosa",kn:"ಮಸಾಲೆ ದೋಸೆ",rom:"Masāle dōse",tip:"With spiced potato filling"},
+    {en:"Sambar",kn:"ಸಾಂಬಾರ್",rom:"Sāmbār",tip:"Spicy lentil soup"},
+    {en:"Bisi bele bath",kn:"ಬಿಸಿಬೇಳೆ ಬಾತ್",rom:"Bisibēḷe bāth",tip:"Karnataka's signature rice dish"},
+    {en:"Ragi mudde",kn:"ರಾಗಿ ಮುದ್ದೆ",rom:"Rāgi mudde",tip:"Finger millet ball — Karnataka staple"},
+    {en:"Akki rotti",kn:"ಅಕ್ಕಿ ರೊಟ್ಟಿ",rom:"Akki roṭṭi",tip:"Rice flour flatbread"},
+    {en:"More rice please",kn:"ಇನ್ನಷ್ಟು ಅನ್ನ ಕೊಡಿ",rom:"Innaṣṭu anna koḍi",tip:""},
+    {en:"The food is very tasty",kn:"ಊಟ ತುಂಬಾ ರುಚಿ ಇದೆ",rom:"Ūṭa tumbā ruci ide",tip:""},
+    {en:"Not too spicy please",kn:"ಖಾರ ಕಡಿಮೆ ಮಾಡಿ",rom:"Khāra kaḍime māḍi",tip:""},
+    {en:"I am vegetarian",kn:"ನಾನು ಸಸ್ಯಾಹಾರಿ",rom:"Nānu sasyāhāri",tip:""},
+    {en:"No meat please",kn:"ಮಾಂಸ ಹಾಕಬೇಡಿ",rom:"Māṃsa hākabēḍi",tip:""},
+    {en:"No onion, no garlic",kn:"ಈರುಳ್ಳಿ ಬೆಳ್ಳುಳ್ಳಿ ಬೇಡ",rom:"Īruḷḷi beḷḷuḷḷi bēḍa",tip:""},
+    {en:"Bill please",kn:"ಬಿಲ್ ಕೊಡಿ",rom:"Bil koḍi",tip:""},
+    {en:"Pack it / Takeaway",kn:"ಪಾರ್ಸಲ್ ಮಾಡಿ",rom:"Pārsal māḍi",tip:""},
+    {en:"Filter coffee",kn:"ಫಿಲ್ಟರ್ ಕಾಫಿ",rom:"Philṭar kāphi",tip:"Karnataka specialty!"},
+    {en:"No sugar please",kn:"ಸಕ್ಕರೆ ಬೇಡ",rom:"Sakkare bēḍa",tip:""},
+    {en:"Chicken curry",kn:"ಕೋಳಿ ಸಾರು",rom:"Kōḷi sāru",tip:""},
+    {en:"Fish fry",kn:"ಮೀನಿನ ಫ್ರೈ",rom:"Mīnina phrai",tip:""},
+    {en:"Buttermilk",kn:"ಮಜ್ಜಿಗೆ",rom:"Majjige",tip:"Common in Karnataka meals"},
+    {en:"Curd / Yoghurt",kn:"ಮೊಸರು",rom:"Mosaru",tip:""},
+    {en:"Ghee",kn:"ತುಪ್ಪ",rom:"Tuppa",tip:""},
+    {en:"Coconut",kn:"ತೆಂಗಿನಕಾಯಿ",rom:"Tenginakāyi",tip:""},
+    {en:"Mango",kn:"ಮಾವಿನಕಾಯಿ",rom:"Māvinakāyi",tip:"Karnataka has the best mangoes!"},
+    {en:"Banana",kn:"ಬಾಳೆಹಣ್ಣು",rom:"Bāḷehaṇṇu",tip:""},
+    {en:"Mysore pak",kn:"ಮೈಸೂರು ಪಾಕ್",rom:"Maisūru pāk",tip:"Famous Karnataka sweet"},
+    {en:"Payasam (kheer)",kn:"ಪಾಯಸ",rom:"Pāyasa",tip:"Traditional dessert"},
+  ],
+  "🏠 Home & Daily Life": [
+    {en:"House / Home",kn:"ಮನೆ",rom:"Mane",tip:""},
+    {en:"Room",kn:"ಕೋಣೆ",rom:"Kōṇe",tip:""},
+    {en:"Kitchen",kn:"ಅಡಿಗೆ ಮನೆ",rom:"Aḍige mane",tip:""},
+    {en:"Bathroom / Toilet",kn:"ಶೌಚಾಲಯ",rom:"Śaucālaya",tip:""},
+    {en:"Bedroom",kn:"ಮಲಗುವ ಕೋಣೆ",rom:"Malaguva kōṇe",tip:""},
+    {en:"Door",kn:"ಬಾಗಿಲು",rom:"Bāgilu",tip:""},
+    {en:"Window",kn:"ಕಿಟಕಿ",rom:"Kiṭaki",tip:""},
+    {en:"Table",kn:"ಮೇಜು",rom:"Mēju",tip:""},
+    {en:"Chair",kn:"ಕುರ್ಚಿ",rom:"Kurci",tip:""},
+    {en:"Bed",kn:"ಹಾಸಿಗೆ",rom:"Hāsige",tip:""},
+    {en:"Water (drinking)",kn:"ನೀರು",rom:"Nīru",tip:"Essential word!"},
+    {en:"Fan",kn:"ಫ್ಯಾನ್",rom:"Phyān",tip:""},
+    {en:"Key",kn:"ಬೀಗದ ಕೈ",rom:"Bīgada kai",tip:""},
+    {en:"Lock",kn:"ಬೀಗ",rom:"Bīga",tip:""},
+    {en:"Electricity",kn:"ವಿದ್ಯುತ್",rom:"Vidyut",tip:""},
+    {en:"Power cut",kn:"ಕರೆಂಟ್ ಹೋಗಿದೆ",rom:"Karenṭ hōgide",tip:"Very common in Karnataka"},
+    {en:"Gas stove",kn:"ಗ್ಯಾಸ್ ಒಲೆ",rom:"Gyās ole",tip:""},
+    {en:"Sweeping / Cleaning",kn:"ಗುಡಿಸುವುದು",rom:"Guḍisuvudu",tip:""},
+    {en:"Washing clothes",kn:"ಬಟ್ಟೆ ತೊಳೆಯುವುದು",rom:"Baṭṭe toḷeyuvudu",tip:""},
+    {en:"Cooking",kn:"ಅಡಿಗೆ ಮಾಡುವುದು",rom:"Aḍige māḍuvudu",tip:""},
+    {en:"Rent",kn:"ಬಾಡಿಗೆ",rom:"Bāḍige",tip:""},
+    {en:"What is the rent?",kn:"ಬಾಡಿಗೆ ಎಷ್ಟು?",rom:"Bāḍige eṣṭu?",tip:""},
+    {en:"Landlord",kn:"ಮನೆ ಮಾಲೀಕ",rom:"Mane mālik",tip:""},
+    {en:"Address",kn:"ವಿಳಾಸ",rom:"Viḷāsa",tip:""},
+    {en:"Where is the toilet?",kn:"ಟಾಯ್ಲೆಟ್ ಎಲ್ಲಿ ಇದೆ?",rom:"Ṭāyleṭ elli ide?",tip:""},
+    {en:"Sugar",kn:"ಸಕ್ಕರೆ",rom:"Sakkare",tip:""},
+    {en:"Salt",kn:"ಉಪ್ಪು",rom:"Uppu",tip:""},
+    {en:"Oil",kn:"ಎಣ್ಣೆ",rom:"Eṇṇe",tip:""},
+    {en:"Milk",kn:"ಹಾಲು",rom:"Hālu",tip:""},
+    {en:"Tea",kn:"ಚಹಾ / ಚಾ",rom:"Cahā / Cā",tip:""},
+    {en:"Coffee",kn:"ಕಾಫಿ",rom:"Kāphi",tip:""},
+  ],
+  "💬 Everyday Conversation": [
+    {en:"What happened?",kn:"ಏನಾಯಿತು?",rom:"Ēnāyitu?",tip:""},
+    {en:"Everything is fine",kn:"ಎಲ್ಲಾ ಸರಿ ಇದೆ",rom:"Ellā sari ide",tip:""},
+    {en:"Wait a moment please",kn:"ಒಂದು ನಿಮಿಷ ಇರಿ",rom:"Ondu nimiṣa iri",tip:""},
+    {en:"Come here",kn:"ಇಲ್ಲಿ ಬನ್ನಿ",rom:"Illi banni",tip:""},
+    {en:"Really? / Is that true?",kn:"ನಿಜವಾ?",rom:"Nijāvā?",tip:""},
+    {en:"Of course! / Absolutely!",kn:"ಖಂಡಿತ!",rom:"Khaṇḍita!",tip:""},
+    {en:"Don't worry",kn:"ಚಿಂತಿಸಬೇಡಿ",rom:"Cintisabēḍi",tip:""},
+    {en:"Let's go!",kn:"ಹೋಗೋಣ!",rom:"Hōgōṇa!",tip:""},
+    {en:"Shall we eat?",kn:"ಊಟ ಮಾಡೋಣವಾ?",rom:"Ūṭa māḍōṇavā?",tip:""},
+    {en:"I am happy",kn:"ನಾನು ಸಂತೋಷದಿಂದ ಇದ್ದೇನೆ",rom:"Nānu santōṣadinda iddēne",tip:""},
+    {en:"I am sad",kn:"ನಾನು ದುಃಖದಿಂದ ಇದ್ದೇನೆ",rom:"Nānu duḥkhadinda iddēne",tip:""},
+    {en:"I am tired",kn:"ನನಗೆ ಆಯಾಸ ಆಗಿದೆ",rom:"Nanage āyāsa āgide",tip:""},
+    {en:"I am bored",kn:"ನನಗೆ ಬೇಜಾರಾಗಿದೆ",rom:"Nanage bējārāgide",tip:""},
+    {en:"I am angry",kn:"ನನಗೆ ಕೋಪ ಬಂದಿದೆ",rom:"Nanage kōpa bandide",tip:""},
+    {en:"I am scared",kn:"ನನಗೆ ಭಯ ಆಗಿದೆ",rom:"Nanage bhaya āgide",tip:""},
+    {en:"How was your day?",kn:"ಇಂದು ದಿನ ಹೇಗೆ ಹೋಯಿತು?",rom:"Indu dina hēge hōyitu?",tip:""},
+    {en:"My day was good",kn:"ನನ್ನ ದಿನ ಚೆನ್ನಾಗಿ ಹೋಯಿತು",rom:"Nanna dina cennāgi hōyitu",tip:""},
+    {en:"See you tomorrow",kn:"ನಾಳೆ ಸಿಗೋಣ",rom:"Nāḷe sigōṇa",tip:""},
+    {en:"What are you doing?",kn:"ನೀವು ಏನು ಮಾಡುತ್ತಿದ್ದೀರಿ?",rom:"Nīvu ēnu māḍuttiddīri?",tip:""},
+    {en:"Can you help me?",kn:"ನನಗೆ ಸಹಾಯ ಮಾಡ್ತೀರಾ?",rom:"Nanage sahāya māḍtīrā?",tip:""},
+    {en:"Tell me more",kn:"ಇನ್ನಷ್ಟು ಹೇಳಿ",rom:"Innaṣṭu hēḷi",tip:""},
+    {en:"I am listening",kn:"ನಾನು ಕೇಳುತ್ತಿದ್ದೇನೆ",rom:"Nānu kēḷuttiddēne",tip:""},
+    {en:"That's interesting",kn:"ಅದು ಆಸಕ್ತಿಕರ ಇದೆ",rom:"Adu āsaktikara ide",tip:""},
+    {en:"Exactly! / That's right!",kn:"ಸರಿಯಾಗಿ ಹೇಳಿದ್ದೀರಿ!",rom:"Sariyāgi hēḷiddīri!",tip:""},
+    {en:"No rush / Take your time",kn:"ನಿಧಾನ ಮಾಡಿ",rom:"Nidhāna māḍi",tip:""},
+    {en:"I miss you",kn:"ನಿಮ್ಮ ನೆನಪಾಗುತ್ತದೆ",rom:"Nimma nenapāguttade",tip:""},
+  ],
+  "🏥 Health & Emergencies": [
+    {en:"Hospital",kn:"ಆಸ್ಪತ್ರೆ",rom:"Āspatre",tip:""},
+    {en:"Doctor",kn:"ವೈದ್ಯ / ಡಾಕ್ಟರ್",rom:"Vaidya / Ḍākṭar",tip:""},
+    {en:"Medicine / Tablet",kn:"ಮಾತ್ರೆ / ಔಷಧ",rom:"Mātre / Auṣadha",tip:""},
+    {en:"I am not feeling well",kn:"ನನಗೆ ಹುಷಾರಿಲ್ಲ",rom:"Nanage huṣārilla",tip:"Very commonly used"},
+    {en:"I have a fever",kn:"ನನಗೆ ಜ್ವರ ಇದೆ",rom:"Nanage jvara ide",tip:""},
+    {en:"I have a headache",kn:"ನನಗೆ ತಲೆನೋವು ಇದೆ",rom:"Nanage talenōvu ide",tip:""},
+    {en:"My stomach hurts",kn:"ನನ್ನ ಹೊಟ್ಟೆ ನೋಯುತ್ತಿದೆ",rom:"Nanna hoṭṭe nōyuttide",tip:""},
+    {en:"I have body ache",kn:"ನನ್ನ ಮೈ ನೋಯುತ್ತಿದೆ",rom:"Nanna mai nōyuttide",tip:""},
+    {en:"I feel dizzy",kn:"ನನಗೆ ತಲೆ ಸುತ್ತುತ್ತಿದೆ",rom:"Nanage tale suttuttide",tip:""},
+    {en:"Call an ambulance!",kn:"ಆಂಬ್ಯುಲೆನ್ಸ್ ಕರಿ!",rom:"Āmbyulens kari!",tip:""},
+    {en:"Help!",kn:"ಸಹಾಯ ಮಾಡಿ!",rom:"Sahāya māḍi!",tip:"Emergency"},
+    {en:"Police!",kn:"ಪೊಲೀಸ್!",rom:"Polīs!",tip:""},
+    {en:"Fire!",kn:"ಬೆಂಕಿ!",rom:"Benki!",tip:""},
+    {en:"I need to see a doctor",kn:"ನನಗೆ ಡಾಕ್ಟರ್ ಅನ್ನು ಭೇಟಿ ಮಾಡಬೇಕು",rom:"Nanage Ḍākṭar annu bhēṭi māḍabēku",tip:""},
+    {en:"I am allergic to ___",kn:"ನನಗೆ ___ ಅಲರ್ಜಿ ಇದೆ",rom:"Nanage ___ alarji ide",tip:""},
+    {en:"I lost my wallet",kn:"ನನ್ನ ವ್ಯಾಲೆಟ್ ಕಳೆದುಹೋಯಿತು",rom:"Nanna vyāleṭ kaḷeduhōyitu",tip:""},
+    {en:"I had an accident",kn:"ನನಗೆ ಆಕ್ಸಿಡೆಂಟ್ ಆಯಿತು",rom:"Nanage Āksiḍenṭ āyitu",tip:""},
+    {en:"Before / After food (medicine)",kn:"ಊಟದ ಮೊದಲು / ನಂತರ",rom:"Ūṭada modalu / nantara",tip:""},
+  ],
+  "🌿 Nature & Weather": [
+    {en:"Rain",kn:"ಮಳೆ",rom:"Maḷe",tip:""},
+    {en:"Sun / Sunshine",kn:"ಬಿಸಿಲು",rom:"Bisilu",tip:""},
+    {en:"Wind",kn:"ಗಾಳಿ",rom:"Gāḷi",tip:""},
+    {en:"Cloud",kn:"ಮೋಡ",rom:"Mōḍa",tip:""},
+    {en:"Thunder",kn:"ಗುಡುಗು",rom:"Gudugu",tip:""},
+    {en:"Lightning",kn:"ಮಿಂಚು",rom:"Miñcu",tip:""},
+    {en:"Rainbow",kn:"ಕಾಮನ ಬಿಲ್ಲು",rom:"Kāmana billu",tip:"Lit: love-god's bow"},
+    {en:"River",kn:"ನದಿ",rom:"Nadi",tip:""},
+    {en:"Sea / Ocean",kn:"ಸಮುದ್ರ",rom:"Samudra",tip:""},
+    {en:"Lake",kn:"ಕೆರೆ",rom:"Kere",tip:"Karnataka has many famous lakes"},
+    {en:"Mountain / Hill",kn:"ಬೆಟ್ಟ",rom:"Beṭṭa",tip:""},
+    {en:"Forest / Jungle",kn:"ಕಾಡು",rom:"Kāḍu",tip:""},
+    {en:"Sky",kn:"ಆಕಾಶ",rom:"Ākāśa",tip:""},
+    {en:"Star",kn:"ನಕ್ಷತ್ರ",rom:"Nakṣatra",tip:""},
+    {en:"Moon",kn:"ಚಂದ್ರ",rom:"Candra",tip:""},
+    {en:"Sun (as a star)",kn:"ಸೂರ್ಯ",rom:"Sūrya",tip:""},
+    {en:"Tree",kn:"ಮರ",rom:"Mara",tip:""},
+    {en:"Flower",kn:"ಹೂವು",rom:"Hūvu",tip:""},
+    {en:"Will it rain today?",kn:"ಇಂದು ಮಳೆ ಬರುತ್ತದಾ?",rom:"Indu maḷe baruttadā?",tip:""},
+    {en:"It is very hot today",kn:"ಇಂದು ತುಂಬಾ ಬಿಸಿ ಇದೆ",rom:"Indu tumbā bisi ide",tip:""},
+    {en:"Rainy season",kn:"ಮಳೆಗಾಲ",rom:"Maḷegāla",tip:""},
+    {en:"Summer",kn:"ಬೇಸಿಗೆ",rom:"Bēsige",tip:""},
+    {en:"Winter",kn:"ಚಳಿಗಾಲ",rom:"Caḷigāla",tip:""},
+  ],
+  "🌟 Advanced Sentences": [
+    {en:"Can you help me find this address?",kn:"ಈ ವಿಳಾಸ ಹುಡುಕಲು ಸಹಾಯ ಮಾಡ್ತೀರಾ?",rom:"Ī viḷāsa huḍukalu sahāya māḍtīrā?",tip:""},
+    {en:"I have been living in Bengaluru for 2 years",kn:"ನಾನು ಎರಡು ವರ್ಷದಿಂದ ಬೆಂಗಳೂರಿನಲ್ಲಿ ವಾಸ ಮಾಡುತ್ತಿದ್ದೇನೆ",rom:"Nānu eraḍu varṣadinda Beṅgaḷūrinalli vāsa māḍuttiddēne",tip:""},
+    {en:"The traffic in Bengaluru is very heavy",kn:"ಬೆಂಗಳೂರಿನಲ್ಲಿ ಟ್ರಾಫಿಕ್ ತುಂಬಾ ಜಾಸ್ತಿ",rom:"Beṅgaḷūrinalli Ṭrāphik tumbā jāsti",tip:""},
+    {en:"I want to visit Hampi this weekend",kn:"ನಾನು ಈ ವಾರಾಂತ್ಯದಲ್ಲಿ ಹಂಪಿಗೆ ಹೋಗಬೇಕು",rom:"Nānu ī vārāntyadalli Hampige hōgabēku",tip:""},
+    {en:"Is this seat free?",kn:"ಈ ಸೀಟ್ ಖಾಲಿ ಇದೆಯಾ?",rom:"Ī sīṭ khāli ideyā?",tip:""},
+    {en:"Can I sit here?",kn:"ನಾನು ಇಲ್ಲಿ ಕೂರಬಹುದಾ?",rom:"Nānu illi kūrabahudā?",tip:""},
+    {en:"Can you share your contact number?",kn:"ನಿಮ್ಮ ನಂಬರ್ ಕೊಡ್ತೀರಾ?",rom:"Nimma nambar koḍtīrā?",tip:""},
+    {en:"I prefer coffee over tea",kn:"ನನಗೆ ಚಹಾಕ್ಕಿಂತ ಕಾಫಿ ಇಷ್ಟ",rom:"Nanage cahākkinta kāphi iṣṭa",tip:""},
+    {en:"I love Karnataka's culture",kn:"ನನಗೆ ಕರ್ನಾಟಕದ ಸಂಸ್ಕೃತಿ ತುಂಬಾ ಇಷ್ಟ",rom:"Nanage Karnāṭakada saṃskṛti tumbā iṣṭa",tip:""},
+    {en:"I want to learn more Kannada",kn:"ನಾನು ಇನ್ನಷ್ಟು ಕನ್ನಡ ಕಲಿಯಬೇಕು",rom:"Nānu innaṣṭu kannaḍa kaliyabēku",tip:""},
+    {en:"Kannada is a beautiful language",kn:"ಕನ್ನಡ ಒಂದು ಸುಂದರ ಭಾಷೆ",rom:"Kannaḍa ondu sundara bhāṣe",tip:""},
+    {en:"My Kannada is not very good yet",kn:"ನನ್ನ ಕನ್ನಡ ಇನ್ನೂ ಅಷ್ಟು ಚೆನ್ನಾಗಿಲ್ಲ",rom:"Nanna kannaḍa innū aṣṭu cennāgilla",tip:""},
+    {en:"But I am practising every day",kn:"ಆದರೆ ನಾನು ಪ್ರತಿ ದಿನ ಅಭ್ಯಾಸ ಮಾಡುತ್ತೇನೆ",rom:"Ādare nānu prati dina abhyāsa māḍuttēne",tip:""},
+    {en:"Could you write it down for me?",kn:"ಬರೆದು ಕೊಡ್ತೀರಾ?",rom:"Baredu koḍtīrā?",tip:""},
+    {en:"Can you recommend a good restaurant?",kn:"ಒಳ್ಳೆ ಹೋಟೆಲ್ ಹೇಳ್ತೀರಾ?",rom:"Oḷḷe hōṭel hēḷtīrā?",tip:""},
+    {en:"I am not satisfied with this service",kn:"ಈ ಸೇವೆ ನನಗೆ ಸಮಾಧಾನ ಆಗಿಲ್ಲ",rom:"Ī sēve nanage samādhāna āgilla",tip:""},
+    {en:"Please speak in Kannada with me",kn:"ನನ್ನ ಜೊತೆ ಕನ್ನಡದಲ್ಲಿ ಮಾತನಾಡಿ",rom:"Nanna jote kannaḍadalli mātanāḍi",tip:""},
+    {en:"Has the train arrived?",kn:"ರೈಲು ಬಂದಿದೆಯಾ?",rom:"Railu bandideyā?",tip:""},
+    {en:"I want to book a room",kn:"ನನಗೆ ಒಂದು ರೂಮ್ ಬುಕ್ ಮಾಡಬೇಕು",rom:"Nanage ondu rūm buk māḍabēku",tip:""},
+    {en:"Is breakfast included?",kn:"ಬ್ರೇಕ್‌ಫಾಸ್ಟ್ ಸೇರಿದೆಯಾ?",rom:"Brēk-phāsṭ sērideyā?",tip:""},
+    {en:"Do you accept credit cards?",kn:"ಕ್ರೆಡಿಟ್ ಕಾರ್ಡ್ ತೆಗೆದುಕೊಳ್ಳುತ್ತೀರಾ?",rom:"Kreḍiṭ kārḍ tegedukoḷḷuttīrā?",tip:""},
+    {en:"We want separate bills",kn:"ನಮಗೆ ಬೇರೆ ಬೇರೆ ಬಿಲ್ ಬೇಕು",rom:"Namage bēre bēre bil bēku",tip:""},
+    {en:"Can I try this on?",kn:"ನಾನು ಇದನ್ನು ಹಾಕಿ ನೋಡಬಹುದಾ?",rom:"Nānu idannu hāki nōḍabahudā?",tip:""},
+    {en:"Is there WiFi here?",kn:"ಇಲ್ಲಿ ವೈಫೈ ಇದೆಯಾ?",rom:"Illi Vaiphai ideyā?",tip:""},
+    {en:"What is the WiFi password?",kn:"ವೈಫೈ ಪಾಸ್‌ವರ್ಡ್ ಏನು?",rom:"Vaiphai pāsvarḍ ēnu?",tip:""},
+    {en:"I will come back later",kn:"ನಾನು ನಂತರ ಬರುತ್ತೇನೆ",rom:"Nānu nantara baruttēne",tip:""},
+    {en:"That sounds good!",kn:"ಅದು ಚೆನ್ನಾಗಿ ಕೇಳುತ್ತದೆ!",rom:"Adu cennāgi kēḷuttade!",tip:""},
+    {en:"I will think about it",kn:"ನಾನು ಯೋಚಿಸುತ್ತೇನೆ",rom:"Nānu yōcisuttēne",tip:""},
+  ],
+};
+
+// ═══════════════════════════════════════════════════════════════════════
+// DATA HELPERS
+// ═══════════════════════════════════════════════════════════════════════
+const ALL_CARDS = Object.entries(DECK).flatMap(([cat,cards])=>cards.map(c=>({...c,category:cat})));
+const CATEGORIES = Object.keys(DECK);
+const TOTAL = ALL_CARDS.length;
+
+function shuffle(arr){
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+  return a;
+}
+
+function makeQuiz(card, allCards, reverse=false){
+  if(reverse){
+    const pool=allCards.filter(c=>c.en!==card.en);
+    const dist=shuffle(pool).slice(0,3).map(c=>({label:c.en,value:c.en}));
+    return{card,options:shuffle([{label:card.en,value:card.en},...dist]),correctValue:card.en,reverse:true};
+  }else{
+    const pool=allCards.filter(c=>c.kn!==card.kn);
+    const dist=shuffle(pool).slice(0,3).map(c=>({label:c.kn,sub:c.rom,value:c.kn}));
+    return{card,options:shuffle([{label:card.kn,sub:card.rom,value:card.kn},...dist]),correctValue:card.kn,reverse:false};
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════════════════
+const S={
+  mode:'learn',
+  selectedCat:'ALL',
+  cardIndex:0,
+  flipped:false,
+  reverseMode:false,
+  seen:new Set(),
+  mastered:new Set(),
+  quizPool:[],
+  quizIdx:0,
+  quizState:null,
+  quizScore:{right:0,wrong:0},
+  showQuizBanner:false,
+  learnCount:0,
+};
+
+function getFiltered(){
+  if(S.selectedCat==='ALL') return ALL_CARDS;
+  return (DECK[S.selectedCat]||[]).map(c=>({...c,category:S.selectedCat}));
+}
+
+function startQuiz(mixReverse=true){
+  const pool=shuffle(getFiltered().length>=8?getFiltered():ALL_CARDS).slice(0,20);
+  S.quizPool=pool.map(c=>makeQuiz(c,ALL_CARDS,mixReverse&&Math.random()>0.5));
+  S.quizIdx=0; S.quizState=null; S.quizScore={right:0,wrong:0};
+  S.showQuizBanner=false; S.mode='quiz';
+  render();
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// RENDER ENGINE
+// ═══════════════════════════════════════════════════════════════════════
+function e(tag,attrs='',children=''){return `<${tag} ${attrs}>${children}</${tag}>`;}
+function pct(n,d){return Math.round((n/Math.max(d,1))*100);}
+
+function renderHeader(){
+  return`<div class="header">
+    <div>
+      <div class="header-title">ಕನ್ನಡ ಕಲಿಯೋಣ · Learn Kannada</div>
+      <div class="header-sub">${TOTAL}+ Flashcards · Basics to Advanced</div>
+    </div>
+    <div class="header-stats">${S.seen.size}/${TOTAL} seen<span>${S.mastered.size} mastered ✓</span></div>
+  </div>`;
+}
+
+function renderTabs(){
+  const tabs=[['learn','📖 Learn'],['quiz','🧠 Quiz'],['stats','📊 Progress']];
+  return`<div class="tabs">${tabs.map(([m,l])=>`<button class="tab ${S.mode===m?'active':''}" onclick="setMode('${m}')">${l}</button>`).join('')}</div>`;
+}
+
+function renderProgBar(val){
+  return`<div class="prog-bar"><div class="prog-fill" style="width:${val}%"></div></div>`;
+}
+
+function renderLearn(){
+  const filtered=getFiltered();
+  const card=filtered[S.cardIndex]||filtered[0];
+  if(!card) return '<p style="color:#888;text-align:center">No cards in this category.</p>';
+
+  // Cat grid
+  let catGrid=`<div class="cat-label">Choose category:</div><div class="cat-grid">`;
+  catGrid+=`<button class="cat-btn ${S.selectedCat==='ALL'?'active':''}" onclick="selectCat('ALL')">🌟 All<br><small>${TOTAL} cards</small></button>`;
+  CATEGORIES.forEach(cat=>{
+    const safe=cat.replace(/'/g,"\\'");
+    catGrid+=`<button class="cat-btn ${S.selectedCat===cat?'active':''}" onclick="selectCat('${safe}')">${cat}<br><small>${DECK[cat].length} cards</small></button>`;
+  });
+  catGrid+='</div>';
+
+  // Progress
+  const prog=pct(S.seen.size,TOTAL);
+  const progHTML=renderProgBar(prog)+`<div class="prog-label">${prog}% of full deck seen</div>`;
+
+  // Flashcard faces
+  const isMastered=S.mastered.has(card.kn);
+  const front=S.reverseMode
+    ?{top:'ಕನ್ನಡ',main:`<div class="card-kn">${card.kn}</div>`,hint:'What is the English meaning?'}
+    :{top:'English',main:`<div class="card-en">${card.en}</div>`,hint:'Tap to reveal Kannada ↻'};
+  const back=S.reverseMode
+    ?{top:'English meaning',main:`<div class="card-en">${card.en}</div>`,rom:'',tip:card.tip}
+    :{top:'ಕನ್ನಡ · Kannada',main:`<div class="card-kn">${card.kn}</div>`,rom:card.rom,tip:card.tip};
+
+  const cardHTML=`<div class="card-wrap" onclick="flipCard()">
+    <div class="card-inner ${S.flipped?'flipped':''}" id="cardInner">
+      <div class="card-face front">
+        <div class="card-badge">${card.category}</div>
+        ${isMastered?'<div class="card-mastered">✓ mastered</div>':''}
+        <div class="card-lang">${front.top}</div>
+        ${front.main}
+        <div class="card-hint-text">${front.hint}</div>
+        <div class="card-flip-hint">tap to flip ↻</div>
+      </div>
+      <div class="card-face back">
+        <div class="card-lang" style="color:#4a8a4a">${back.top}</div>
+        ${back.main}
+        ${back.rom?`<div class="card-rom">${back.rom}</div>`:''}
+        ${back.tip?`<div class="card-tip">💡 ${back.tip}</div>`:''}
+        <div class="card-flip-hint">tap to flip back ↻</div>
+      </div>
+    </div>
+  </div>`;
+
+  // Nav
+  const nav=`<div class="nav-row">
+    <button class="nav-btn" onclick="navCard(-1)">← Prev</button>
+    <div><div class="nav-counter">${S.cardIndex+1} / ${filtered.length}</div>
+    <div class="nav-cat">${S.selectedCat==='ALL'?'All Categories':S.selectedCat}</div></div>
+    <button class="nav-btn" onclick="navCard(1)">Next →</button>
+  </div>`;
+
+  const actions=`<div class="action-row">
+    <button class="action-btn btn-master" onclick="markMastered()">✓ Mastered</button>
+    <button class="action-btn btn-random" onclick="randomCard()">🔀 Random</button>
+    <button class="action-btn btn-reverse ${S.reverseMode?'on':''}" onclick="toggleReverse()">${S.reverseMode?'🔄 KN→EN ON':'🔄 Reverse Off'}</button>
+    <button class="action-btn btn-quiz" onclick="startQuiz(true)">🧠 Quick Quiz</button>
+  </div>`;
+
+  const banner=S.showQuizBanner?`<div class="quiz-banner">
+    <span class="quiz-banner-text">🎯 Quiz time! Test what you've learned</span>
+    <div class="quiz-banner-btns">
+      <button class="quiz-banner-btn qbb-take" onclick="startQuiz(true)">Take Quiz</button>
+      <button class="quiz-banner-btn qbb-skip" onclick="dismissBanner()">Skip</button>
+    </div>
+  </div>`:'';
+
+  return banner+catGrid+progHTML+cardHTML+nav+actions;
+}
+
+function renderQuiz(){
+  if(S.quizPool.length===0){
+    return`<div class="quiz-start">
+      <div class="quiz-start-icon">🧠</div>
+      <div class="quiz-start-title">Ready to test yourself?</div>
+      <div class="quiz-start-sub">Questions include both English→Kannada and Kannada→English</div>
+      <div class="quiz-start-btns">
+        <button class="nav-btn" onclick="startQuiz(true)">🎲 Mixed Quiz (Recommended)</button>
+        <button class="nav-btn" onclick="startQuiz(false)" style="font-size:12px">EN→KN Only</button>
+      </div>
+    </div>`;
+  }
+
+  if(S.quizIdx>=S.quizPool.length){
+    const sc=S.quizScore;
+    const pctScore=Math.round((sc.right/S.quizPool.length)*100);
+    const icon=pctScore>=85?'🌟':pctScore>=60?'👍':'📚';
+    const msg=pctScore>=85?'Excellent!':pctScore>=60?'Good work!':'Keep practising!';
+    return`<div class="quiz-done">
+      <div class="quiz-done-icon">${icon}</div>
+      <div class="quiz-done-title">Quiz Complete!</div>
+      <div class="quiz-done-score">${sc.right}/${S.quizPool.length}</div>
+      <div class="quiz-done-sub">${pctScore}% accuracy · ${msg}</div>
+      <div class="quiz-done-btns">
+        <button class="nav-btn" onclick="startQuiz(true)">🔄 Try Again</button>
+        <button class="nav-btn" style="color:#d4a843" onclick="setMode('learn')">📖 Back to Learn</button>
+      </div>
+    </div>`;
+  }
+
+  const q=S.quizPool[S.quizIdx];
+  const prog=pct(S.quizIdx,S.quizPool.length);
+
+  const progRow=renderProgBar(prog)+`<div class="quiz-prog-row">
+    <span>Q ${S.quizIdx+1}/${S.quizPool.length}</span>
+    <span class="quiz-type-tag ${q.reverse?'quiz-type-reverse':'quiz-type-normal'}">${q.reverse?'🔄 KN → EN':'📖 EN → KN'}</span>
+    <span><span style="color:#8ade8a">✓${S.quizScore.right}</span> <span style="color:#de8a8a">✗${S.quizScore.wrong}</span></span>
+  </div>`;
+
+  const qCardContent=q.reverse
+    ?`<div class="quiz-card-label">What is the English meaning of:</div>
+       <div class="quiz-q-kn">${q.card.kn}</div>
+       <div class="quiz-q-rom">${q.card.rom}</div>`
+    :`<div class="quiz-card-label">Choose the correct Kannada for:</div>
+       <div class="quiz-q-en">${q.card.en}</div>`;
+
+  const opts=q.options.map((opt,i)=>{
+    let cls='';
+    if(S.quizState){
+      if(opt.value===S.quizState.correct) cls='correct';
+      else if(opt.value===S.quizState.chosen) cls='wrong';
+    }
+    const disabled=S.quizState?'disabled':''
+    const content=q.reverse
+      ?`<span class="opt-en">${opt.label}</span>`
+      :`${opt.label}${opt.sub?`<span class="opt-rom">${opt.sub}</span>`:''}`;
+    return`<button class="opt-btn ${cls}" ${disabled} onclick="answerQuiz('${opt.value.replace(/'/g,"\\'")}')">${content}</button>`;
+  }).join('');
+
+  let resultHTML='';
+  if(S.quizState){
+    const ok=S.quizState.ok;
+    const answerDisplay=ok?'✓ Correct!':`✗ Correct answer: <strong>${S.quizState.correct}</strong>`;
+    const romNote=(!ok&&!q.reverse&&q.card.rom)?`<div class="quiz-result-sub">/${q.card.rom}/</div>`:'';
+    resultHTML=`<div class="quiz-result ${ok?'ok':'fail'}">${answerDisplay}${romNote}</div>
+    <div class="quiz-next-wrap"><button class="nav-btn" onclick="nextQuiz()">${S.quizIdx+1>=S.quizPool.length?'See Results 🏆':'Next →'}</button></div>`;
+  }
+
+  return`${progRow}<div class="quiz-card">${qCardContent}</div><div class="opt-grid">${opts}</div>${resultHTML}`;
+}
+
+function renderStats(){
+  const prog=pct(S.seen.size,TOTAL);
+  const grid=`<div class="stats-grid">
+    <div class="stat-box"><div class="stat-num">${TOTAL}</div><div class="stat-label">Total Cards</div></div>
+    <div class="stat-box"><div class="stat-num seen">${S.seen.size}</div><div class="stat-label">Seen</div></div>
+    <div class="stat-box"><div class="stat-num mastered">${S.mastered.size}</div><div class="stat-label">Mastered</div></div>
+  </div>`;
+  const cats=CATEGORIES.map(cat=>{
+    const c=DECK[cat];
+    const sc=c.filter(x=>S.seen.has(x.kn)).length;
+    const mc=c.filter(x=>S.mastered.has(x.kn)).length;
+    const p=pct(sc,c.length);
+    return`<div class="cat-stat">
+      <div class="cat-stat-row"><span class="cat-stat-name">${cat}</span><span class="cat-stat-count">${sc}/${c.length} seen · ${mc} ✓</span></div>
+      ${renderProgBar(p)}
+    </div>`;
+  }).join('');
+  return`<div class="stats-title">Your Progress</div>${grid}<div class="stats-sub">Category breakdown:</div>${cats}
+  <div class="stats-btns">
+    <button class="nav-btn" onclick="startQuiz(true)">🧠 Take a Quiz</button>
+    <button class="btn-danger" onclick="resetProgress()">🔄 Reset Progress</button>
+  </div>`;
+}
+
+function render(){
+  const bodyContent=S.mode==='learn'?renderLearn():S.mode==='quiz'?renderQuiz():renderStats();
+  document.getElementById('app').innerHTML=renderHeader()+renderTabs()+`<div class="body">${bodyContent}</div>`;
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// EVENT HANDLERS
+// ═══════════════════════════════════════════════════════════════════════
+function setMode(m){S.mode=m;render();}
+
+function selectCat(cat){
+  S.selectedCat=cat; S.cardIndex=0; S.flipped=false;
+  const filtered=getFiltered();
+  if(filtered[0]) S.seen.add(filtered[0].kn);
+  render();
+}
+
+function flipCard(){S.flipped=!S.flipped;render();}
+
+function navCard(dir){
+  S.flipped=false;
+  const filtered=getFiltered();
+  let n=S.cardIndex+dir;
+  if(n<0) n=filtered.length-1;
+  if(n>=filtered.length) n=0;
+  S.cardIndex=n;
+  if(filtered[n]){
+    S.seen.add(filtered[n].kn);
+    S.learnCount++;
+    if(S.learnCount>0&&S.learnCount%8===0) S.showQuizBanner=true;
+  }
+  render();
+}
+
+function randomCard(){
+  const filtered=getFiltered();
+  S.cardIndex=Math.floor(Math.random()*filtered.length);
+  S.flipped=false;
+  if(filtered[S.cardIndex]) S.seen.add(filtered[S.cardIndex].kn);
+  render();
+}
+
+function markMastered(){
+  const filtered=getFiltered();
+  const card=filtered[S.cardIndex];
+  if(card) S.mastered.add(card.kn);
+  navCard(1);
+}
+
+function toggleReverse(){S.reverseMode=!S.reverseMode;S.flipped=false;render();}
+
+function dismissBanner(){S.showQuizBanner=false;render();}
+
+function answerQuiz(val){
+  if(S.quizState) return;
+  const q=S.quizPool[S.quizIdx];
+  const ok=val===q.correctValue;
+  S.quizState={chosen:val,correct:q.correctValue,ok};
+  S.quizScore={right:S.quizScore.right+(ok?1:0),wrong:S.quizScore.wrong+(ok?0:1)};
+  render();
+}
+
+function nextQuiz(){
+  S.quizIdx++;
+  S.quizState=null;
+  render();
+}
+
+function resetProgress(){
+  if(confirm('Reset all progress? This cannot be undone.')){
+    S.seen=new Set(); S.mastered=new Set(); S.learnCount=0; S.showQuizBanner=false;
+    render();
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════════════════
+window.onload=function(){
+  // Mark first card seen
+  const first=ALL_CARDS[0];
+  if(first) S.seen.add(first.kn);
+  render();
+};
+</script>
+</body>
+</html>
