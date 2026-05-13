@@ -76,12 +76,28 @@ body{min-height:100vh;background:linear-gradient(135deg,#0a0f1a 0%,#141a2e 60%,#
 .qbb-take{border:1px solid #e8a870;background:rgba(200,100,30,.2);color:#e8a870}
 .qbb-skip{border:1px solid #6a5040;background:transparent;color:#6a5040}
 
+/* ── Quiz Setup Panel ── */
+.qsetup{background:rgba(0,0,0,.2);border-radius:16px;padding:16px;margin-bottom:0}
+.qsetup-header{text-align:center;margin-bottom:18px}
+.qsetup-icon{font-size:32px;margin-bottom:6px}
+.qsetup-title{font-size:18px;color:#f0c96a;font-weight:bold}
+.qsetup-sub{font-size:11px;color:#7a6040;margin-top:4px}
+.qsetup-section{margin-bottom:16px}
+.qsetup-label{font-size:11px;color:#9a8060;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;font-weight:bold}
+.qsetup-chips{display:flex;flex-wrap:wrap;gap:7px}
+.chip{padding:7px 13px;border-radius:20px;border:2px solid rgba(212,168,67,.25);background:rgba(255,255,255,.03);color:#8a7a5a;font-family:Georgia,serif;font-size:11px;cursor:pointer;transition:all .2s;white-space:nowrap}
+.chip.on{border-color:#f0c96a;background:rgba(212,168,67,.2);color:#f0c96a}
+.chip.on-green{border-color:#6adc6a;background:rgba(74,154,74,.2);color:#8ade8a}
+.chip.on-blue{border-color:#80b8e8;background:rgba(80,130,200,.2);color:#80b8e8}
+.chip.on-orange{border-color:#e8a870;background:rgba(200,130,70,.2);color:#e8a870}
+.qsetup-cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:7px}
+.cat-chip{padding:8px 10px;border-radius:10px;border:2px solid rgba(212,168,67,.2);background:rgba(255,255,255,.025);color:#8a7a5a;font-family:Georgia,serif;font-size:10px;cursor:pointer;transition:all .2s;text-align:center;line-height:1.4}
+.cat-chip.on{border-color:#f0c96a;background:rgba(212,168,67,.18);color:#f0c96a}
+.qsetup-preview{text-align:center;padding:12px;background:rgba(212,168,67,.07);border:1px solid rgba(212,168,67,.2);border-radius:10px;margin-bottom:14px;font-size:12px;color:#b09060}
+.qsetup-preview strong{color:#f0c96a;font-size:15px}
+.qsetup-launch{width:100%;padding:14px;border-radius:12px;border:2px solid #d4a843;background:linear-gradient(135deg,rgba(212,168,67,.25),rgba(212,168,67,.1));color:#f0c96a;font-family:Georgia,serif;font-size:16px;cursor:pointer;transition:all .2s;font-weight:bold}
+.qsetup-launch:hover{background:linear-gradient(135deg,rgba(212,168,67,.4),rgba(212,168,67,.2))}
 /* ── Quiz ── */
-.quiz-start{text-align:center;padding-top:30px}
-.quiz-start-icon{font-size:40px;margin-bottom:12px}
-.quiz-start-title{font-size:17px;margin-bottom:8px}
-.quiz-start-sub{font-size:12px;color:#7a6040;margin-bottom:20px}
-.quiz-start-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
 .quiz-prog-row{display:flex;justify-content:space-between;font-size:11px;color:#6a5040;margin-bottom:12px}
 .quiz-type-tag{font-size:11px;padding:2px 8px;border-radius:10px}
 .quiz-type-normal{color:#c8a050}
@@ -791,6 +807,7 @@ const S={
   quizScore:{right:0,wrong:0},
   showQuizBanner:false,
   learnCount:0,
+  qs:{cats:new Set(['ALL']),count:20,direction:'mixed',filter:'all'},
 };
 
 function getFiltered(){
@@ -798,9 +815,40 @@ function getFiltered(){
   return (DECK[S.selectedCat]||[]).map(c=>({...c,category:S.selectedCat}));
 }
 
+function buildQuizPool(){
+  const qs=S.qs;
+  // 1. Category pool
+  let pool=qs.cats.has('ALL')?[...ALL_CARDS]:ALL_CARDS.filter(c=>qs.cats.has(c.category));
+  // 2. Filter
+  if(qs.filter==='unseen') pool=pool.filter(c=>!S.seen.has(c.kn));
+  else if(qs.filter==='unmastered') pool=pool.filter(c=>!S.mastered.has(c.kn));
+  // 3. Fallback if too small
+  if(pool.length<4){
+    pool=qs.cats.has('ALL')?[...ALL_CARDS]:ALL_CARDS.filter(c=>qs.cats.has(c.category));
+    if(pool.length<4) pool=[...ALL_CARDS];
+  }
+  // 4. Shuffle + limit
+  pool=shuffle(pool);
+  const count=qs.count==='max'?pool.length:Math.min(Number(qs.count),pool.length);
+  pool=pool.slice(0,count);
+  // 5. Make quiz items with direction
+  return pool.map(c=>{
+    const rev=qs.direction==='kn-en'?true:qs.direction==='en-kn'?false:Math.random()>0.5;
+    return makeQuiz(c,ALL_CARDS,rev);
+  });
+}
+
+function launchQuiz(){
+  S.quizPool=buildQuizPool();
+  S.quizIdx=0; S.quizState=null; S.quizScore={right:0,wrong:0};
+  S.showQuizBanner=false;
+  render();
+}
+
 function startQuiz(mixReverse=true){
-  const pool=shuffle(getFiltered().length>=8?getFiltered():ALL_CARDS).slice(0,20);
-  S.quizPool=pool.map(c=>makeQuiz(c,ALL_CARDS,mixReverse&&Math.random()>0.5));
+  // Quick-launch: respect category but use defaults otherwise
+  S.qs.direction=mixReverse?'mixed':'en-kn';
+  S.quizPool=buildQuizPool();
   S.quizIdx=0; S.quizState=null; S.quizScore={right:0,wrong:0};
   S.showQuizBanner=false; S.mode='quiz';
   render();
@@ -890,13 +938,13 @@ function renderLearn(){
     <button class="action-btn btn-master" onclick="markMastered()">✓ Mastered</button>
     <button class="action-btn btn-random" onclick="randomCard()">🔀 Random</button>
     <button class="action-btn btn-reverse ${S.reverseMode?'on':''}" onclick="toggleReverse()">${S.reverseMode?'🔄 KN→EN ON':'🔄 Reverse Off'}</button>
-    <button class="action-btn btn-quiz" onclick="startQuiz(true)">🧠 Quick Quiz</button>
+    <button class="action-btn btn-quiz" onclick="openQuizSetup()">🧠 Quiz Setup</button>
   </div>`;
 
   const banner=S.showQuizBanner?`<div class="quiz-banner">
     <span class="quiz-banner-text">🎯 Quiz time! Test what you've learned</span>
     <div class="quiz-banner-btns">
-      <button class="quiz-banner-btn qbb-take" onclick="startQuiz(true)">Take Quiz</button>
+      <button class="quiz-banner-btn qbb-take" onclick="openQuizSetup()">Configure Quiz</button>
       <button class="quiz-banner-btn qbb-skip" onclick="dismissBanner()">Skip</button>
     </div>
   </div>`:'';
@@ -904,17 +952,80 @@ function renderLearn(){
   return banner+catGrid+progHTML+cardHTML+nav+actions;
 }
 
+function quizPoolPreview(){
+  const qs=S.qs;
+  let pool=qs.cats.has('ALL')?[...ALL_CARDS]:ALL_CARDS.filter(c=>qs.cats.has(c.category));
+  if(qs.filter==='unseen') pool=pool.filter(c=>!S.seen.has(c.kn));
+  else if(qs.filter==='unmastered') pool=pool.filter(c=>!S.mastered.has(c.kn));
+  if(pool.length<4){
+    pool=qs.cats.has('ALL')?[...ALL_CARDS]:ALL_CARDS.filter(c=>qs.cats.has(c.category));
+    if(pool.length<4) pool=[...ALL_CARDS];
+  }
+  const count=qs.count==='max'?pool.length:Math.min(Number(qs.count),pool.length);
+  return{available:pool.length,count};
+}
+
+function renderQuizSetup(){
+  const qs=S.qs;
+  const dirOpts=[['mixed','🎲 Mixed'],['en-kn','📖 EN → KN'],['kn-en','🔄 KN → EN']];
+  const cntOpts=[10,20,30,50,'max'];
+  const filtOpts=[['all','All Cards'],['unseen','Unseen Only'],['unmastered','Not Mastered']];
+
+  // Category chips
+  const allChip=`<button class="cat-chip ${qs.cats.has('ALL')?'on':''}" onclick="toggleQCat('ALL')">🌟 All Categories<br><small>${TOTAL} cards</small></button>`;
+  const catChips=CATEGORIES.map(cat=>{
+    const safe=cat.replace(/'/g,"\\'");
+    const active=!qs.cats.has('ALL')&&qs.cats.has(cat);
+    return`<button class="cat-chip ${active?'on':''}" onclick="toggleQCat('${safe}')">${cat}<br><small>${DECK[cat].length} cards</small></button>`;
+  }).join('');
+
+  // Direction chips
+  const dirChips=dirOpts.map(([v,l])=>`<button class="chip ${qs.direction===v?'on-blue':''}" onclick="setQDir('${v}')">${l}</button>`).join('');
+
+  // Count chips
+  const cntChips=cntOpts.map(v=>`<button class="chip ${qs.count===v?'on':''}" onclick="setQCount(${v==='max'?"'max'":v})">${v==='max'?'Max':v+' Qs'}</button>`).join('');
+
+  // Filter chips
+  const filtChips=filtOpts.map(([v,l])=>`<button class="chip ${qs.filter===v?'on-green':''}" onclick="setQFilter('${v}')">${l}</button>`).join('');
+
+  const {available,count}=quizPoolPreview();
+  const preview=`<div class="qsetup-preview">Ready to generate <strong>${count}</strong> questions from <strong>${available}</strong> matching cards</div>`;
+
+  return`<div class="qsetup">
+    <div class="qsetup-header">
+      <div class="qsetup-icon">🧠</div>
+      <div class="qsetup-title">Configure Your Quiz</div>
+      <div class="qsetup-sub">Mix categories, direction, and filters your way</div>
+    </div>
+
+    <div class="qsetup-section">
+      <div class="qsetup-label">📚 Categories</div>
+      <div class="qsetup-cat-grid">${allChip}${catChips}</div>
+    </div>
+
+    <div class="qsetup-section">
+      <div class="qsetup-label">🔢 Questions</div>
+      <div class="qsetup-chips">${cntChips}</div>
+    </div>
+
+    <div class="qsetup-section">
+      <div class="qsetup-label">↔️ Direction</div>
+      <div class="qsetup-chips">${dirChips}</div>
+    </div>
+
+    <div class="qsetup-section">
+      <div class="qsetup-label">🎯 Card Filter</div>
+      <div class="qsetup-chips">${filtChips}</div>
+    </div>
+
+    ${preview}
+    <button class="qsetup-launch" onclick="launchQuiz()">▶ Start Quiz</button>
+  </div>`;
+}
+
 function renderQuiz(){
   if(S.quizPool.length===0){
-    return`<div class="quiz-start">
-      <div class="quiz-start-icon">🧠</div>
-      <div class="quiz-start-title">Ready to test yourself?</div>
-      <div class="quiz-start-sub">Questions include both English→Kannada and Kannada→English</div>
-      <div class="quiz-start-btns">
-        <button class="nav-btn" onclick="startQuiz(true)">🎲 Mixed Quiz (Recommended)</button>
-        <button class="nav-btn" onclick="startQuiz(false)" style="font-size:12px">EN→KN Only</button>
-      </div>
-    </div>`;
+    return renderQuizSetup();
   }
 
   if(S.quizIdx>=S.quizPool.length){
@@ -928,7 +1039,8 @@ function renderQuiz(){
       <div class="quiz-done-score">${sc.right}/${S.quizPool.length}</div>
       <div class="quiz-done-sub">${pctScore}% accuracy · ${msg}</div>
       <div class="quiz-done-btns">
-        <button class="nav-btn" onclick="startQuiz(true)">🔄 Try Again</button>
+        <button class="nav-btn" onclick="launchQuiz()">🔄 Try Again</button>
+        <button class="nav-btn" style="color:#80b8e8;border-color:rgba(80,130,200,.4)" onclick="resetAndConfigure()">⚙️ New Config</button>
         <button class="nav-btn" style="color:#d4a843" onclick="setMode('learn')">📖 Back to Learn</button>
       </div>
     </div>`;
@@ -994,7 +1106,7 @@ function renderStats(){
   }).join('');
   return`<div class="stats-title">Your Progress</div>${grid}<div class="stats-sub">Category breakdown:</div>${cats}
   <div class="stats-btns">
-    <button class="nav-btn" onclick="startQuiz(true)">🧠 Take a Quiz</button>
+    <button class="nav-btn" onclick="openQuizSetup()">🧠 Configure Quiz</button>
     <button class="btn-danger" onclick="resetProgress()">🔄 Reset Progress</button>
   </div>`;
 }
@@ -1007,7 +1119,9 @@ function render(){
 // ═══════════════════════════════════════════════════════════════════════
 // EVENT HANDLERS
 // ═══════════════════════════════════════════════════════════════════════
-function setMode(m){S.mode=m;render();}
+function openQuizSetup(){S.quizPool=[];S.mode='quiz';render();}
+
+function setMode(m){S.mode=m;if(m==='quiz')S.quizPool=[];render();}
 
 function selectCat(cat){
   S.selectedCat=cat; S.cardIndex=0; S.flipped=false;
@@ -1052,6 +1166,21 @@ function toggleReverse(){S.reverseMode=!S.reverseMode;S.flipped=false;render();}
 
 function dismissBanner(){S.showQuizBanner=false;render();}
 
+function toggleQCat(cat){
+  if(cat==='ALL'){S.qs.cats=new Set(['ALL']);}
+  else{
+    S.qs.cats.delete('ALL');
+    if(S.qs.cats.has(cat)) S.qs.cats.delete(cat);
+    else S.qs.cats.add(cat);
+    if(S.qs.cats.size===0) S.qs.cats.add('ALL');
+  }
+  render();
+}
+function setQCount(v){S.qs.count=v;render();}
+function setQDir(v){S.qs.direction=v;render();}
+function setQFilter(v){S.qs.filter=v;render();}
+function resetAndConfigure(){S.quizPool=[];render();}
+
 function answerQuiz(val){
   if(S.quizState) return;
   const q=S.quizPool[S.quizIdx];
@@ -1074,7 +1203,7 @@ function resetProgress(){
   }
 }
 
-// ══════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════════════════════════════════
 window.onload=function(){
